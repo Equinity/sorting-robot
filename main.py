@@ -1,8 +1,24 @@
-print("hello morgan")
-Fool = int(input("Skriv en sifra: "))
+#!/usr/bin/env pybricks-micropython
+from pybricks.hubs import EV3Brick
+from pybricks.ev3devices import Motor, TouchSensor, ColorSensor
+from pybricks.parameters import Port, Stop, Direction
+from pybricks.tools import wait
 
-if Fool == 1:
-    print("Morgan e stupid")
+# Create your objects here
 
-else:
-    print("Morgan e stupid")
+# Initialize the EV3 Brick.
+ev3 = EV3Brick()
+
+# Initialize a motor at port B.
+test_motor = Motor(Port.B)
+
+# Write your program here
+
+# Play a sound.
+ev3.speaker.beep()
+
+# Run the motor up to 500 degrees per second. To a target angle of 90 degrees.
+test_motor.run_target(500, 90)
+
+# Play another beep sound.
+ev3.speaker.beep(frequency=1000, duration=500)
