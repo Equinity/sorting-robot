@@ -1,5 +1,5 @@
 print("hello morgan")
-fool = 1
+fool = int(input("Skriv en sifra: "))
 
 if fool == 1:
     print("Morgan e stupid")
