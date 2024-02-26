@@ -16,6 +16,8 @@ from pybricks.ev3devices import Motor, TouchSensor, ColorSensor
 from pybricks.parameters import Port, Stop, Direction, Color
 from pybricks.tools import wait
 
+COLORS = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
+
 # Initialize the EV3 Brick
 ev3 = EV3Brick()
 
@@ -46,82 +48,83 @@ base_switch = TouchSensor(Port.S1)
 # Set up the Color Sensor. This sensor detects when the elbow
 # is in the starting position. This is when the sensor sees the
 # white beam up close.
-elbow_sensor = ColorSensor(Port.S2)
+color_sensor = ColorSensor(Port.S2)
 
-# Initialize the elbow. First make it go down for one second.
-# Then make it go upwards slowly (15 degrees per second) until
-# the Color Sensor detects the white beam. Then reset the motor
-# angle to make this the zero point. Finally, hold the motor
-# in place so it does not move.
-elbow_motor.run_time(-30, 1000)
-elbow_motor.run(15)
-while elbow_sensor.reflection() > 0:
-    wait(10)
-elbow_motor.reset_angle(0)
-elbow_motor.hold()
+# Calibrate all the motors
+def initialize():
+    # Initialize the elbow. First make it go down for one second.
+    # Then make it go upwards slowly (15 degrees per second) until
+    # the Color Sensor detects the white beam. Then reset the motor
+    # angle to make this the zero point. Finally, hold the motor
+    # in place so it does not move.
+    elbow_motor.run_time(-30, 1000)
+    elbow_motor.run(15)
+    while color_sensor.reflection() > 0:
+        wait(10)
+    elbow_motor.reset_angle(0)
+    elbow_motor.hold()
 
-# Initialize the base. First rotate it until the Touch Sensor
-# in the base is pressed. Reset the motor angle to make this
-# the zero point. Then hold the motor in place so it does not move.
-base_motor.run(-60)
-while not base_switch.pressed():
-    wait(10)
-base_motor.reset_angle(0)
-base_motor.hold()
+    # Initialize the base. First rotate it until the Touch Sensor
+    # in the base is pressed. Reset the motor angle to make this
+    # the zero point. Then hold the motor in place so it does not move.
+    base_motor.run(-60)
+    while not base_switch.pressed():
+        wait(10)
+    base_motor.reset_angle(0)
+    base_motor.hold()
 
-# Initialize the gripper. First rotate the motor until it stalls.
-# Stalling means that it cannot move any further. This position
-# corresponds to the closed position. Then rotate the motor
-# by 90 degrees such that the gripper is open.
-gripper_motor.run_until_stalled(200, then=Stop.COAST, duty_limit=50)
-gripper_motor.reset_angle(0)
-gripper_motor.run_target(200, -90)
+    # Initialize the gripper. First rotate the motor until it stalls.
+    # Stalling means that it cannot move any further. This position
+    # corresponds to the closed position. Then rotate the motor
+    # by 90 degrees such that the gripper is open.
+    gripper_motor.run_until_stalled(200, then=Stop.COAST, duty_limit=50)
+    gripper_motor.reset_angle(0)
+    gripper_motor.run_target(200, -90)
 
-def robot_pick(position):
-    # This function makes the robot base rotate to the indicated
-    # position. There it lowers the elbow, closes the gripper, and
-    # raises the elbow to pick up the object.
+    # Play sound to indicate that the initialization is complete.
+    ev3.speaker.play_notes(["E4/4", "E4/4", "E4/4"])
 
-    # Rotate to the pick-up position.
-    base_motor.run_target(60, position)
+def robot_pick():
+    # This function it lowers the elbow, closes the
+    # gripper, and raises the elbow to pick up the package.
+
     # Lower the arm.
     elbow_motor.run_target(60, -40)
-    # Close the gripper to grab the wheel stack.
+    # Close the gripper to grab the package.
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=75)
-    # Raise the arm to lift the wheel stack.
+    # Raise the arm to lift the package.
     elbow_motor.run_target(60, 0)
 
-
-def robot_release(position):
-    # This function makes the robot base rotate to the indicated
-    # position. There it lowers the elbow, opens the gripper to
-    # release the object. Then it raises its arm again.
-
-    # Rotate to the drop-off position.
+#TODO: Add functionality for movement based on color
+def robot_move(position):
+    # Rotate to the pick-up position.
     base_motor.run_target(60, position)
-    # Lower the arm to put the wheel stack on the ground.
+
+def robot_release():
+    # This function lowers the elbow, opens the gripper to
+    # release the package. Then it raises its arm again.
+
+    # Lower the arm to put the package on the ground.
     elbow_motor.run_target(60, -40)
-    # Open the gripper to release the wheel stack.
+    # Open the gripper to release the package.
     gripper_motor.run_target(200, -90)
     # Raise the arm.
     elbow_motor.run_target(60, 0)
 
+#TODO: Finish the code
 def color_sense():
-    color_sensed = elbow_sensor.color()
-    ev3.light.on(Color.color_sensed)
+    color_sensed = color_sensor.color()
+    print(color_sensed)
+    wait(100)
+    ev3.light.on(color_sensed)
 
-
-
-
-# Play three beeps to indicate that the initialization is complete.
-for i in range(1):
-    ev3.speaker.play_notes(["E4/4", "E4/4", "E4/4"])
-    wait(10)
 
 # Define the three destinations for picking up and moving the wheel stacks.
 LEFT = 205
 MIDDLE = 145
 RIGHT = 100
+#TODO: Verify this location
+PICK_UP = 0
 
 # This is the main part of the program. It is a loop that repeats endlessly.
 #
@@ -132,20 +135,19 @@ RIGHT = 100
 # Now we have a wheel stack on the left and on the right as before, but they
 # have switched places. Then the loop repeats to do this over and over.
 while True:
-    # Move a wheel stack from the left to the middle.
-    robot_pick(LEFT)
-    robot_release(MIDDLE)
-    # ev3.light.on(Color.RED)
-    # wait(100)
-    # ev3.light.on(Color.ORANGE)
-    # wait(100)
-    # ev3.light.on(Color.GREEN)
-    # wait(100)
+    initialize()
 
-    # Move a wheel stack from the right to the left.
-    robot_pick(RIGHT)
-    robot_release(LEFT)
+    robot_move(position)
+    # # Move a wheel stack from the left to the middle.
+    # robot_pick(LEFT)
+    # robot_release(MIDDLE)
 
-    # Move a wheel stack from the middle to the right.
-    robot_pick(MIDDLE)
-    robot_release(RIGHT)
+    # # Move a wheel stack from the right to the left.
+    # robot_pick(RIGHT)
+    # robot_release(LEFT)
+
+    # # Move a wheel stack from the middle to the right.
+    # robot_pick(MIDDLE)
+    # robot_release(RIGHT)
+
+    color_sense()
