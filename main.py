@@ -13,7 +13,7 @@ https://education.lego.com/en-us/support/mindstorms-ev3/building-instructions#bu
 
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor, TouchSensor, ColorSensor
-from pybricks.parameters import Port, Stop, Direction
+from pybricks.parameters import Port, Stop, Direction, Color
 from pybricks.tools import wait
 
 # Initialize the EV3 Brick
@@ -46,7 +46,7 @@ base_switch = TouchSensor(Port.S1)
 # Set up the Color Sensor. This sensor detects when the elbow
 # is in the starting position. This is when the sensor sees the
 # white beam up close.
-elbow_sensor = ColorSensor(Port.S3)
+elbow_sensor = ColorSensor(Port.S2)
 
 # Initialize the elbow. First make it go down for one second.
 # Then make it go upwards slowly (15 degrees per second) until
@@ -55,7 +55,7 @@ elbow_sensor = ColorSensor(Port.S3)
 # in place so it does not move.
 elbow_motor.run_time(-30, 1000)
 elbow_motor.run(15)
-while elbow_sensor.reflection() < 32:
+while elbow_sensor.reflection() > 0:
     wait(10)
 elbow_motor.reset_angle(0)
 elbow_motor.hold()
@@ -77,7 +77,6 @@ gripper_motor.run_until_stalled(200, then=Stop.COAST, duty_limit=50)
 gripper_motor.reset_angle(0)
 gripper_motor.run_target(200, -90)
 
-
 def robot_pick(position):
     # This function makes the robot base rotate to the indicated
     # position. There it lowers the elbow, closes the gripper, and
@@ -88,7 +87,7 @@ def robot_pick(position):
     # Lower the arm.
     elbow_motor.run_target(60, -40)
     # Close the gripper to grab the wheel stack.
-    gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
+    gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=75)
     # Raise the arm to lift the wheel stack.
     elbow_motor.run_target(60, 0)
 
@@ -107,16 +106,22 @@ def robot_release(position):
     # Raise the arm.
     elbow_motor.run_target(60, 0)
 
+def color_sense():
+    color_sensed = elbow_sensor.color()
+    ev3.light.on(Color.color_sensed)
+
+
+
 
 # Play three beeps to indicate that the initialization is complete.
-for i in range(3):
-    ev3.speaker.beep()
-    wait(100)
+for i in range(1):
+    ev3.speaker.play_notes(["E4/4", "E4/4", "E4/4"])
+    wait(10)
 
 # Define the three destinations for picking up and moving the wheel stacks.
-LEFT = 160
-MIDDLE = 100
-RIGHT = 40
+LEFT = 205
+MIDDLE = 145
+RIGHT = 100
 
 # This is the main part of the program. It is a loop that repeats endlessly.
 #
@@ -130,6 +135,12 @@ while True:
     # Move a wheel stack from the left to the middle.
     robot_pick(LEFT)
     robot_release(MIDDLE)
+    # ev3.light.on(Color.RED)
+    # wait(100)
+    # ev3.light.on(Color.ORANGE)
+    # wait(100)
+    # ev3.light.on(Color.GREEN)
+    # wait(100)
 
     # Move a wheel stack from the right to the left.
     robot_pick(RIGHT)
