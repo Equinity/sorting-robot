@@ -125,12 +125,12 @@ def set_location():
 
 
 # Define the three destinations for picking up and moving the wheel stacks.
-LEFT = 190
-MIDDLE = 145
-RIGHT = 90
-TRASH = 45
-#TODO: Verify this location
-PICK_UP = 0
+POSITIONS = [LEFT = 190, MIDDLE = 145, RIGHT = 90, TRASH = 45, PICK_UP = 0]
+
+
+
+
+
 
 # This is the main part of the program. It is a loop that repeats endlessly.
 #
@@ -147,6 +147,7 @@ initialize()
 #     "LEFT" : "0", "MIDDLE" : "1" , "RIGHT" : "2"
 # }
 def main():
+    run = True
     base_motor.run_angle(10,11)
     base_motor.reset_angle(0)
 
@@ -154,7 +155,7 @@ def main():
         run = False
         set_location()
 
-    while:
+    while run == True:
 
         robot_move(PICK_UP)
         robot_pick()
