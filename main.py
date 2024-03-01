@@ -17,7 +17,7 @@ from pybricks.parameters import Port, Stop, Direction, Color, Button
 from pybricks.tools import wait
 
 # Define the destinations for picking up and moving the packages.
-POSITIONS = [0, 45, 90, 145, 190]# Define the three destinations for picking up and moving the wheel stacks.
+POSITIONS = [0, 45, 90, 145, 190]
 
 color_list = []
 
@@ -128,17 +128,18 @@ def color_sense():
     return color_sensed
 
 def set_location():
-
-    while Button.LEFT in ev3.buttons():
+    while Button.LEFT in ev3.buttons.pressed():
         base_motor.run(50)
-    while Button.RIGHT in ev3.buttons():
+    while Button.RIGHT in ev3.buttons.pressed():
         base_motor.run(-50)
-    while Button.UP in ev3.buttons():
+    while Button.UP in ev3.buttons.pressed():
         elbow_motor.run(50)
-    while Button.DOWN in ev3.buttons():
+    while Button.DOWN in ev3.buttons.pressed():
         elbow_motor.run(-50)
-    base_motor.hold()
-    elbow_motor.hold()
+    while Button.CENTER in ev3.buttons.pressed():
+        base_motor.hold()
+        elbow_motor.hold()
+        return True
 
 # This is the main part of the program. It is a loop that repeats endlessly.
 #
@@ -155,13 +156,10 @@ initialize()
 #     "LEFT" : "0", "MIDDLE" : "1" , "RIGHT" : "2"
 # }
 def main():
-    run = True
     base_motor.run_angle(10,11)
     base_motor.reset_angle(0)
 
-    if Button.CENTER in ev3.buttons():
-        run = False
-        # POSITIONS = set_location()
+    run = set_location()
 
     while run == True:
 
@@ -184,7 +182,7 @@ def main():
             robot_move(POSITIONS[1])
             robot_release()
 
-        robot_move(POSITIONS[0])
+        robot_move(POSITIONS[2])
         wait(3000)
         # color_1 = color_sense()
         # drop_off_color.uptade({"LEFT" : color_1})
