@@ -13,7 +13,7 @@ https://education.lego.com/en-us/support/mindstorms-ev3/building-instructions#bu
 
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor, TouchSensor, ColorSensor
-from pybricks.parameters import Port, Stop, Direction, Color
+from pybricks.parameters import Port, Stop, Direction, Color, Button
 from pybricks.tools import wait
 
 COLORS = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
@@ -93,7 +93,7 @@ def robot_pick():
     # Close the gripper to grab the package.
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=75)
     # Raise the arm to lift the package.
-    elbow_motor.run_target(60, 0)
+    elbow_motor.run_target(60, 7)
 
 #TODO: Add functionality for movement based on color
 def robot_move(position):
@@ -114,17 +114,21 @@ def robot_release():
 
 def color_sense():
     # function for identifying color of package
+    wait(300)
     color_sensed = color_sensor.color()
     print(color_sensed)
-    wait(100)
     ev3.light.on(color_sensed)
     return color_sensed
+
+def set_location():
+    while
 
 
 # Define the three destinations for picking up and moving the wheel stacks.
 LEFT = 190
 MIDDLE = 145
 RIGHT = 90
+TRASH = 45
 #TODO: Verify this location
 PICK_UP = 0
 
@@ -139,33 +143,42 @@ PICK_UP = 0
 initialize()
 # base_motor.run_angle(10,12)
 # base_motor.reset_angle(0)
-
+# drop_off_color = {
+#     "LEFT" : "0", "MIDDLE" : "1" , "RIGHT" : "2"
+# }
 def main():
     base_motor.run_angle(10,11)
     base_motor.reset_angle(0)
 
-    while True:
+    if Button.CENTER in ev3.buttons():
+        run = False
+        set_location()
+
+    while:
 
         robot_move(PICK_UP)
         robot_pick()
-        color_sense()
+        color = color_sense()
+        if color == COLORS[0]:
+            robot_move(LEFT)
+            robot_release()
 
-        robot_move(MIDDLE)
-        robot_release()
+        elif color == COLORS[1]:
+            robot_move(MIDDLE)
+            robot_release()
+
+        elif color == COLORS[2]:
+            robot_move(RIGHT)
+            robot_release()
+
+        else:
+            robot_move(TRASH)
+            robot_release()
+
         robot_move(RIGHT)
+        wait(3000)
+        # color_1 = color_sense()
+        # drop_off_color.uptade({"LEFT" : color_1})
 
-        # Move a wheel stack from the right to the left.
-        robot_pick()
-        robot_move(LEFT)
-        robot_release()
-        robot_move(RIGHT)
-
-        # Move a wheel stack from the middle to the right.
-        robot_pick()
-        robot_move(MIDDLE)
-        robot_release()
-        robot_move(RIGHT)
-
-        color_sense()
 if __name__ == "__main__":
     main()
