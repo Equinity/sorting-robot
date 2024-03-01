@@ -89,16 +89,16 @@ def initialize():
     # Play sound to indicate that the initialization is complete.
     ev3.speaker.play_notes(["E4/16"])
 
-def robot_pick():
+def robot_pick(angle):
     # This function it lowers the elbow, closes the
     # gripper, and raises the elbow to pick up the package.
 
     # Lower the arm.
-    elbow_motor.run_target(60, -40)
+    elbow_motor.run_target(60, angle)
     # Close the gripper to grab the package.
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=75)
     # Raise the arm to lift the package.
-    elbow_motor.run_target(60, -10)
+    elbow_motor.run_target(60, 10)
 
 #TODO: Add functionality for movement based on color
 def robot_move(position):
@@ -114,7 +114,7 @@ def robot_release():
     # Open the gripper to release the package.
     gripper_motor.run_target(200, -90)
     # Raise the arm.
-    elbow_motor.run_target(60, 0)
+    elbow_motor.run_target(60, 20)
 
 
 def color_sense():
@@ -133,18 +133,19 @@ def color_sense():
     return color_sensed
 
 def set_location():
-    while Button.LEFT in ev3.buttons.pressed():
-        base_motor.run(50)
-    while Button.RIGHT in ev3.buttons.pressed():
-        base_motor.run(-50)
-    while Button.UP in ev3.buttons.pressed():
-        elbow_motor.run(50)
-    while Button.DOWN in ev3.buttons.pressed():
-        elbow_motor.run(-50)
-    while Button.CENTER in ev3.buttons.pressed():
+    while Button.CENTER not in ev3.buttons.pressed():
+        while Button.LEFT in ev3.buttons.pressed():
+            base_motor.run(50)
+        while Button.RIGHT in ev3.buttons.pressed():
+            base_motor.run(-50)
+        while Button.UP in ev3.buttons.pressed():
+            elbow_motor.run(50)
+        while Button.DOWN in ev3.buttons.pressed():
+            elbow_motor.run(-50)
+
         base_motor.hold()
         elbow_motor.hold()
-        return True
+    return base_motor.angle(), elbow_motor.angle()
 
 # This is the main part of the program. It is a loop that repeats endlessly.
 #
@@ -163,17 +164,19 @@ initialize()
 def main():
     base_motor.run_angle(10,11)
     base_motor.reset_angle(0)
-
+    run = True
     # if Button.CENTER in ev3.buttons():
     #     run = False
     #     # POSITIONS = set_location()
 
-    run = set_location()
+    base_angle, elbow_angle = set_location()
+    elbow_motor.run_target(60, 30)
 
     while run == True:
 
-        robot_move(POSITIONS[0])
-        robot_pick()
+        # Pick-up location
+        robot_move(base_angle)
+        robot_pick(elbow_angle)
         color = color_sense()
         if color == COLORS[0]:
             robot_move(POSITIONS[4])
