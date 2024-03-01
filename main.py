@@ -16,6 +16,9 @@ from pybricks.ev3devices import Motor, TouchSensor, ColorSensor
 from pybricks.parameters import Port, Stop, Direction, Color, Button
 from pybricks.tools import wait
 
+# Define the destinations for picking up and moving the packages.
+POSITIONS = [0, 45, 90, 145, 190]
+
 COLORS = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
 
 # Initialize the EV3 Brick
@@ -121,14 +124,16 @@ def color_sense():
     return color_sensed
 
 def set_location():
-    while
-
-
-# Define the three destinations for picking up and moving the wheel stacks.
-POSITIONS = [LEFT = 190, MIDDLE = 145, RIGHT = 90, TRASH = 45, PICK_UP = 0]
-
-
-
+    while Button.LEFT in ev3.buttons():
+        base_motor.run(50)
+    while Button.RIGHT in ev3.buttons():
+        base_motor.run(-50)
+    while Button.UP in ev3.buttons():
+        elbow_motor.run(50)
+    while Button.DOWN in ev3.buttons():
+        elbow_motor.run(-50)
+    base_motor.hold()
+    elbow_motor.hold()
 
 
 
@@ -153,30 +158,30 @@ def main():
 
     if Button.CENTER in ev3.buttons():
         run = False
-        set_location()
+        # POSITIONS = set_location()
 
     while run == True:
 
-        robot_move(PICK_UP)
+        robot_move(POSITIONS[0])
         robot_pick()
         color = color_sense()
         if color == COLORS[0]:
-            robot_move(LEFT)
+            robot_move(POSITIONS[4])
             robot_release()
 
         elif color == COLORS[1]:
-            robot_move(MIDDLE)
+            robot_move(POSITIONS[3])
             robot_release()
 
         elif color == COLORS[2]:
-            robot_move(RIGHT)
+            robot_move(POSITIONS[2])
             robot_release()
 
         else:
-            robot_move(TRASH)
+            robot_move(POSITIONS[1])
             robot_release()
 
-        robot_move(RIGHT)
+        robot_move(POSITIONS[0])
         wait(3000)
         # color_1 = color_sense()
         # drop_off_color.uptade({"LEFT" : color_1})
