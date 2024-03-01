@@ -98,7 +98,7 @@ def robot_pick():
     # Close the gripper to grab the package.
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=75)
     # Raise the arm to lift the package.
-    elbow_motor.run_target(60, -10)
+    elbow_motor.run_target(60, -20)
 
 #TODO: Add functionality for movement based on color
 def robot_move(position):
@@ -121,16 +121,33 @@ def color_sense():
     # function for identifying color of package
     wait(300)
     color_sensed = color_sensor.rgb()
-    print(color_sensed)
-    while len(color_list) < 3   :
-        if color_sensed in color_list:
-            return
-        else:
-            color_list.append(color_sensed)
-    # blue = (1, 3, 23)
-    print(color_list)
-    # ev3.light.on(color_sensed)
-    return color_sensed
+    print(type(color_sensed[0]))
+    print(color_sensed[0])
+    print(color_sensed[1])
+    print(color_sensed[2])
+    # if float(color_sensed[2]) > 20:
+    #     color_sensed = "BLUE"
+
+    # if (color_sensed[0]) > 20:
+    #     color_sensed = "RED"
+
+    # if color_sensed[1] > 20:
+    #     color_sensed = "GREEN"
+
+    # else:
+    #     print("finns ingen sån färg")
+
+    # print(color_sensed)
+    # if color_sensed in color_list:
+    #     return color_sensed
+
+    # else:
+    #     if len(color_list) < 3:
+    #         color_list.append(color_sensed)
+    #     # blue = (1, 3, 23)
+    #     # ev3.light.on(color_sensed)
+    #     print(color_list)
+    #     return color_sensed
 
 def set_location():
     while Button.LEFT in ev3.buttons.pressed():
@@ -168,7 +185,8 @@ def main():
     #     run = False
     #     # POSITIONS = set_location()
 
-    run = set_location()
+    # run = set_location()
+    run = True
 
     while run == True:
 
@@ -196,5 +214,5 @@ def main():
         # color_1 = color_sense()
         # drop_off_color.uptade({"LEFT" : color_1})
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
