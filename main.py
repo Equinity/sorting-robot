@@ -98,7 +98,7 @@ def robot_pick():
     # Close the gripper to grab the package.
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=75)
     # Raise the arm to lift the package.
-    elbow_motor.run_target(60, 7)
+    elbow_motor.run_target(60, -10)
 
 #TODO: Add functionality for movement based on color
 def robot_move(position):
@@ -123,6 +123,7 @@ def color_sense():
     color_sensed = color_sensor.rgb()
     # while len(color_list) < 3   :
     #     color_list.append(color_sensed)
+    # blue = (1, 3, 23)
     print(color_sensed)
     ev3.light.on(color_sensed)
     return color_sensed
@@ -159,9 +160,9 @@ def main():
     base_motor.run_angle(10,11)
     base_motor.reset_angle(0)
 
-    if Button.CENTER in ev3.buttons():
-        run = False
-        # POSITIONS = set_location()
+    # if Button.CENTER in ev3.buttons():
+    #     run = False
+    #     # POSITIONS = set_location()
 
     while run == True:
 
