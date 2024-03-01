@@ -82,7 +82,7 @@ def initialize():
     gripper_motor.run_target(200, -90)
 
     # Play sound to indicate that the initialization is complete.
-    ev3.speaker.play_notes(["E4/4", "E4/4", "E4/4"])
+    ev3.speaker.play_notes(["E4/16"])
 
 def robot_pick():
     # This function it lowers the elbow, closes the
@@ -111,18 +111,20 @@ def robot_release():
     # Raise the arm.
     elbow_motor.run_target(60, 0)
 
-#TODO: Finish the code
+
 def color_sense():
+    # function for identifying color of package
     color_sensed = color_sensor.color()
     print(color_sensed)
     wait(100)
     ev3.light.on(color_sensed)
+    return color_sensed
 
 
 # Define the three destinations for picking up and moving the wheel stacks.
-LEFT = 205
+LEFT = 190
 MIDDLE = 145
-RIGHT = 100
+RIGHT = 90
 #TODO: Verify this location
 PICK_UP = 0
 
@@ -134,20 +136,36 @@ PICK_UP = 0
 #
 # Now we have a wheel stack on the left and on the right as before, but they
 # have switched places. Then the loop repeats to do this over and over.
-while True:
-    initialize()
+initialize()
+# base_motor.run_angle(10,12)
+# base_motor.reset_angle(0)
 
-    robot_move(position)
-    # # Move a wheel stack from the left to the middle.
-    # robot_pick(LEFT)
-    # robot_release(MIDDLE)
+def main():
+    base_motor.run_angle(10,11)
+    base_motor.reset_angle(0)
 
-    # # Move a wheel stack from the right to the left.
-    # robot_pick(RIGHT)
-    # robot_release(LEFT)
+    while True:
 
-    # # Move a wheel stack from the middle to the right.
-    # robot_pick(MIDDLE)
-    # robot_release(RIGHT)
+        robot_move(PICK_UP)
+        robot_pick()
+        color_sense()
 
-    color_sense()
+        robot_move(MIDDLE)
+        robot_release()
+        robot_move(RIGHT)
+
+        # Move a wheel stack from the right to the left.
+        robot_pick()
+        robot_move(LEFT)
+        robot_release()
+        robot_move(RIGHT)
+
+        # Move a wheel stack from the middle to the right.
+        robot_pick()
+        robot_move(MIDDLE)
+        robot_release()
+        robot_move(RIGHT)
+
+        color_sense()
+if __name__ == "__main__":
+    main()
