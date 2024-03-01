@@ -122,8 +122,14 @@ def color_sense():
     color_sensed = color_sensor.rgb()
     print(type(color_sensed[0]))
     print(color_sensed[0])
+    if float(color_sensed[0]) < 20:
+        print('funkar')
+    if int(color_sensed[0]) <20:
+        print('funkar')
+
     print(color_sensed[1])
     print(color_sensed[2])
+
     # if float(color_sensed[2]) > 20:
     #     color_sensed = "BLUE"
 
