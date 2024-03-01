@@ -115,7 +115,9 @@ def robot_release():
 def color_sense():
     # function for identifying color of package
     wait(300)
-    color_sensed = color_sensor.color()
+    color_sensed = color_sensor.rgb()
+    # while len(color_list) < 3   :
+    #     color_list.append(color_sensed)
     print(color_sensed)
     ev3.light.on(color_sensed)
     return color_sensed
@@ -127,6 +129,7 @@ def set_location():
 # Define the three destinations for picking up and moving the wheel stacks.
 POSITIONS = [LEFT = 190, MIDDLE = 145, RIGHT = 90, TRASH = 45, PICK_UP = 0]
 
+color_list = []
 
 
 
