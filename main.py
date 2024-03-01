@@ -57,6 +57,14 @@ color_sensor = ColorSensor(Port.S2)
 
 # Calibrate all the motors
 def initialize():
+    # Initialize the gripper. First rotate the motor until it stalls.
+    # Stalling means that it cannot move any further. This position
+    # corresponds to the closed position. Then rotate the motor
+    # by 90 degrees such that the gripper is open.
+    gripper_motor.run_until_stalled(200, then=Stop.COAST, duty_limit=50)
+    gripper_motor.reset_angle(0)
+    gripper_motor.run_target(200, -90)
+
     # Initialize the elbow. First make it go down for one second.
     # Then make it go upwards slowly (15 degrees per second) until
     # the Color Sensor detects the white beam. Then reset the motor
@@ -78,14 +86,6 @@ def initialize():
     base_motor.reset_angle(0)
     base_motor.hold()
 
-    # Initialize the gripper. First rotate the motor until it stalls.
-    # Stalling means that it cannot move any further. This position
-    # corresponds to the closed position. Then rotate the motor
-    # by 90 degrees such that the gripper is open.
-    gripper_motor.run_until_stalled(200, then=Stop.COAST, duty_limit=50)
-    gripper_motor.reset_angle(0)
-    gripper_motor.run_target(200, -90)
-
     # Play sound to indicate that the initialization is complete.
     ev3.speaker.play_notes(["E4/16"])
 
@@ -98,9 +98,8 @@ def robot_pick(angle):
     # Close the gripper to grab the package.
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=75)
     # Raise the arm to lift the package.
-    elbow_motor.run_target(60, -20)
+    elbow_motor.run_target(60, 5)
 
-#TODO: Add functionality for movement based on color
 def robot_move(position):
     # Rotate to the pick-up position.
     base_motor.run_target(60, position)
@@ -164,6 +163,15 @@ def set_location():
         elbow_motor.hold()
     return base_motor.angle(), elbow_motor.angle()
 
+def check_location(position, angle):
+    robot_move(position)
+    robot_pick(angle)
+    color = color_sense()
+    if color == "None":
+        ev3.speaker.say("No package")
+    else:
+        ev3.speaker.say("Package, color:" + str(color))
+
 # This is the main part of the program. It is a loop that repeats endlessly.
 #
 # First, the robot moves the object on the left towards the middle.
@@ -172,20 +180,21 @@ def set_location():
 #
 # Now we have a wheel stack on the left and on the right as before, but they
 # have switched places. Then the loop repeats to do this over and over.
-initialize()
+
 # base_motor.run_angle(10,12)
 # base_motor.reset_angle(0)
 # drop_off_color = {
 #     "LEFT" : "0", "MIDDLE" : "1" , "RIGHT" : "2"
 # }
 def main():
+    initialize()
     base_motor.run_angle(10,11)
     base_motor.reset_angle(0)
     run = True
     # if Button.CENTER in ev3.buttons():
     #     run = False
     #     # POSITIONS = set_location()
-    
+
     # run = set_location()
     run = True
     base_angle, elbow_angle = set_location()
@@ -219,5 +228,9 @@ def main():
         # color_1 = color_sense()
         # drop_off_color.uptade({"LEFT" : color_1})
 
-# if __name__ == "__main__":
-#     main()
+    # while True:
+    #     print(color_sensor.color())
+    #     wait(800)
+
+if __name__ == "__main__":
+    main()
