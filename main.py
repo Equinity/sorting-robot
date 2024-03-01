@@ -121,11 +121,15 @@ def color_sense():
     # function for identifying color of package
     wait(300)
     color_sensed = color_sensor.rgb()
-    # while len(color_list) < 3   :
-    #     color_list.append(color_sensed)
-    # blue = (1, 3, 23)
     print(color_sensed)
-    ev3.light.on(color_sensed)
+    while len(color_list) < 3   :
+        if color_sensed in color_list:
+            return
+        else:
+            color_list.append(color_sensed)
+    # blue = (1, 3, 23)
+    print(color_list)
+    # ev3.light.on(color_sensed)
     return color_sensed
 
 def set_location():
