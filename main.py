@@ -21,6 +21,8 @@ POSITIONS = [0, 45, 90, 145, 190]
 
 color_list = []
 
+color_freq = []
+
 COLORS = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
 
 # Initialize the EV3 Brick
@@ -118,17 +120,20 @@ def robot_release():
 
 def color_sense():
     # function for identifying color of package
-    wait(300)
-    color_sensed = color_sensor.rgb()
-    print(type(color_sensed[0]))
-    print(color_sensed[0])
-    if float(color_sensed[0]) < 20:
-        print('funkar')
-    if int(color_sensed[0]) <20:
-        print('funkar')
+    wait(3000)
+    for i in len(color_freq):
+        if i == 1000:
+            pass
+        else:
+            color_sensed = color_sense.color()
+            color_freq.append(color_sensed)
+    print(color_freq)
 
-    print(color_sensed[1])
-    print(color_sensed[2])
+    color_freq.count("COLOR.red")
+    color_freq.count("COLOR.green")
+    color_freq.count("COLOR.yellow")
+    color_freq.count("COLOR.black")
+    color_freq.count("COLOR.blue")
 
     # if float(color_sensed[2]) > 20:
     #     color_sensed = "BLUE"
