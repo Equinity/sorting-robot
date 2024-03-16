@@ -19,9 +19,9 @@ from pybricks.tools import wait
 # Define the destinations for picking up and moving the packages.
 POSITIONS = [0, 45, 90, 145, 190]
 
-color_list = []
-
 color_freq = []
+
+color_freq_count = []
 
 COLORS = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
 
@@ -120,44 +120,36 @@ def robot_release():
 
 def color_sense():
     # function for identifying color of package
-    wait(3000)
+    # wait(3000)
     for i in len(color_freq):
         if i == 1000:
             pass
         else:
             color_sensed = color_sense.color()
             color_freq.append(color_sensed)
-    print(color_freq)
 
-    color_freq.count("COLOR.red")
-    color_freq.count("COLOR.green")
-    color_freq.count("COLOR.yellow")
-    color_freq.count("COLOR.black")
-    color_freq.count("COLOR.blue")
+    for i in COLORS:
+        color_freq.count(i)
+        print(i)
+    
+    print(color_freq.count("Color.RED"))
+    print(color_freq.count("Color.GREEN"))
+    print(color_freq.count("Color.YELLOW"))
+    print(color_freq.count("Color.BLACK"))
+    print(color_freq.count("Color.BLUE"))
 
-    # if float(color_sensed[2]) > 20:
-    #     color_sensed = "BLUE"
+    if color_freq.count("Color.RED") > 100:
+        return Color.RED
+    if color_freq.count("Color.GREEN") > 100:
+        return Color.GREEN
+    if color_freq.count("Color.YELLOW") > 100:
+        return Color.YELLOW
+    if color_freq.count("Color.BLACK") > 100:
+        return Color.BLACK
+    if color_freq.count("Color.BLUE") > 100:
+        return Color.BLUE
+    
 
-    # if (color_sensed[0]) > 20:
-    #     color_sensed = "RED"
-
-    # if color_sensed[1] > 20:
-    #     color_sensed = "GREEN"
-
-    # else:
-    #     print("finns ingen sån färg")
-
-    # print(color_sensed)
-    # if color_sensed in color_list:
-    #     return color_sensed
-
-    # else:
-    #     if len(color_list) < 3:
-    #         color_list.append(color_sensed)
-    #     # blue = (1, 3, 23)
-    #     # ev3.light.on(color_sensed)
-    #     print(color_list)
-    #     return color_sensed
 
 def set_location():
     while Button.CENTER not in ev3.buttons.pressed():
