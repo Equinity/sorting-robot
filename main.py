@@ -21,9 +21,9 @@ POSITIONS = [0, 45, 90, 145, 190]
 
 color_freq = []
 
-color_freq_count = []
+color_freq_count = {}
 
-COLORS = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
+COLORS = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.BLACK]
 
 # Initialize the EV3 Brick
 ev3 = EV3Brick()
@@ -127,27 +127,29 @@ def color_sense():
         else:
             color_sensed = color_sense.color()
             color_freq.append(color_sensed)
+    
+    print(len(color_freq))
+    
+    # print(color_freq.count("Color.RED"))
+    # print(color_freq.count("Color.GREEN"))
+    # print(color_freq.count("Color.YELLOW"))
+    # print(color_freq.count("Color.BLACK"))
+    # print(color_freq.count("Color.BLUE"))
 
     for i in COLORS:
-        color_freq.count(i)
-        print(i)
+        color_freq.update({i:color_freq.count(i)})
+    print(color_freq_count)
     
-    print(color_freq.count("Color.RED"))
-    print(color_freq.count("Color.GREEN"))
-    print(color_freq.count("Color.YELLOW"))
-    print(color_freq.count("Color.BLACK"))
-    print(color_freq.count("Color.BLUE"))
-
-    if color_freq.count("Color.RED") > 100:
-        return Color.RED
-    if color_freq.count("Color.GREEN") > 100:
-        return Color.GREEN
-    if color_freq.count("Color.YELLOW") > 100:
-        return Color.YELLOW
-    if color_freq.count("Color.BLACK") > 100:
-        return Color.BLACK
-    if color_freq.count("Color.BLUE") > 100:
-        return Color.BLUE
+    # if color_freq.count("Color.RED") > 100:
+    #     return Color.RED
+    # if color_freq.count("Color.GREEN") > 100:
+    #     return Color.GREEN
+    # if color_freq.count("Color.YELLOW") > 100:
+    #     return Color.YELLOW
+    # if color_freq.count("Color.BLACK") > 100:
+    #     return Color.BLACK
+    # if color_freq.count("Color.BLUE") > 100:
+    #     return Color.BLUE
     
 
 
