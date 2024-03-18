@@ -21,7 +21,9 @@ POSITIONS = [0, 45, 90, 145, 190]
 
 color_freq = []
 
-color_freq_count = {}
+# color_freq_count = {}
+color_freq_count = []
+color_freq_high = []
 
 COLORS = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.BLACK]
 
@@ -79,12 +81,14 @@ def initialize():
     elbow_motor.reset_angle(0)
     elbow_motor.hold()
 
+
     # Initialize the base. First rotate it until the Touch Sensor
     # in the base is pressed. Reset the motor angle to make this
     # the zero point. Then hold the motor in place so it does not move.
     base_motor.run(-60)
     while not base_switch.pressed():
         wait(10)
+    base_motor.run_angle(10,11) # Micro adjustment (needs tweaking for every single robot)
     base_motor.reset_angle(0)
     base_motor.hold()
 
@@ -121,6 +125,24 @@ def robot_release():
 def color_sense():
     # function for identifying color of package
     # wait(3000)
+
+    '''LÖSING 0'''
+    # color = color_sense.color()
+    # if color == Color.RED:
+    #     return Color.RED 
+    # elif color == Color.BLACK:
+    #     return Color.BLUE 
+    # elif color == Color.BLUE:
+    #     return Color.BLUE
+    # elif color == Color.GREEN:
+    #     return Color.GREEN
+    # elif color == Color.YELLOW:
+    #     return Color.YELLOW 
+    # else:
+    #     print('stfu')
+    #     return None
+
+    '''LÖSNING 1 ----- inte bulletproof'''
     for i in len(color_freq):
         if i == 1000:
             pass
@@ -129,27 +151,25 @@ def color_sense():
             color_freq.append(color_sensed)
     
     print(len(color_freq))
-    
-    # print(color_freq.count("Color.RED"))
-    # print(color_freq.count("Color.GREEN"))
-    # print(color_freq.count("Color.YELLOW"))
-    # print(color_freq.count("Color.BLACK"))
-    # print(color_freq.count("Color.BLUE"))
 
     for i in COLORS:
-        color_freq.update({i:color_freq.count(i)})
-    print(color_freq_count)
+        if color_freq.count(i) > 50: # mst tweaka '50'
+            color_freq_high.append(color_freq.count(i))
     
-    # if color_freq.count("Color.RED") > 100:
-    #     return Color.RED
-    # if color_freq.count("Color.GREEN") > 100:
-    #     return Color.GREEN
-    # if color_freq.count("Color.YELLOW") > 100:
-    #     return Color.YELLOW
-    # if color_freq.count("Color.BLACK") > 100:
-    #     return Color.BLACK
-    # if color_freq.count("Color.BLUE") > 100:
-    #     return Color.BLUE
+    print(color_freq_high)
+
+    if len(color_freq_high) < 2:
+        print(color_freq_high[0])
+        return color_freq_high[0]
+    else:
+        print('blå')
+        return Color.BLUE
+    
+    ''' LÖSING 3 '''
+    # for i in COLORS:
+    #     color_freq_count.update({i:color_freq.count(i)})
+    # print(color_freq_count)
+
     
 
 
@@ -193,18 +213,24 @@ def check_location(position, angle):
 # }
 def main():
     initialize()
-    base_motor.run_angle(10,11)
-    base_motor.reset_angle(0)
     run = True
-    # if Button.CENTER in ev3.buttons():
-    #     run = False
-    #     # POSITIONS = set_location()
+    # base_motor.run_angle(10,11)
+    # base_motor.reset_angle(0)
+    # run = True
+    # # if Button.CENTER in ev3.buttons():
+    # #     run = False
+    # #     # POSITIONS = set_location()
 
-    # run = set_location()
-    run = True
+    # # run = set_location()
+    # run = True
+    # base_angle, elbow_angle = set_location()
+    # elbow_motor.run_target(60, 30)
+
+
+    
+    
     base_angle, elbow_angle = set_location()
     elbow_motor.run_target(60, 30)
-
 
     while run == True:
 
@@ -232,6 +258,35 @@ def main():
         wait(3000)
         # color_1 = color_sense()
         # drop_off_color.uptade({"LEFT" : color_1})
+
+
+
+    # while run == True:
+
+    #     # Pick-up location
+    #     robot_move(base_angle)
+    #     robot_pick(elbow_angle)
+    #     color = color_sense()
+    #     if color == COLORS[0]:
+    #         robot_move(POSITIONS[4])
+    #         robot_release()
+
+    #     elif color == COLORS[1]:
+    #         robot_move(POSITIONS[3])
+    #         robot_release()
+
+    #     elif color == COLORS[2]:
+    #         robot_move(POSITIONS[2])
+    #         robot_release()
+
+    #     else:
+    #         robot_move(POSITIONS[1])
+    #         robot_release()
+
+    #     robot_move(POSITIONS[2])
+    #     wait(3000)
+    #     # color_1 = color_sense()
+    #     # drop_off_color.uptade({"LEFT" : color_1})
 
     # while True:
     #     print(color_sensor.color())
