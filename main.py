@@ -21,6 +21,8 @@ POSITIONS = [0, 45, 90, 145, 190]
 
 color_freq = []
 
+run = True
+
 # color_freq_count = {}
 color_freq_count = []
 color_freq_high = []
@@ -197,50 +199,21 @@ def check_location(position, angle):
     else:
         ev3.speaker.say("Package, color:" + str(color))
 
-# This is the main part of the program. It is a loop that repeats endlessly.
-#
-# First, the robot moves the object on the left towards the middle.
-# Second, the robot moves the object on the right towards the left.
-# Finally, the robot moves the object that is now in the middle, to the right.
-#
-# Now we have a wheel stack on the left and on the right as before, but they
-# have switched places. Then the loop repeats to do this over and over.
-
-# base_motor.run_angle(10,12)
-# base_motor.reset_angle(0)
-# drop_off_color = {
-#     "LEFT" : "0", "MIDDLE" : "1" , "RIGHT" : "2"
-# }
-def main():
-    initialize()
-    run = True
-    # base_motor.run_angle(10,11)
-    # base_motor.reset_angle(0)
-    # run = True
-    # # if Button.CENTER in ev3.buttons():
-    # #     run = False
-    # #     # POSITIONS = set_location()
-
-    # # run = set_location()
-    # run = True
-    # base_angle, elbow_angle = set_location()
-    # elbow_motor.run_target(60, 30)
-
-
-    
-    
-    base_angle, elbow_angle = set_location()
-    elbow_motor.run_target(60, 30)
-
+def sorting():
     while run == True:
+        if Button.CENTER in ev3.buttons():
+            run = False
+            # POSITIONS = set_location()
+        
+        robot_move(POSITIONS[0])
+        robot_pick(POSITIONS[0])
 
-        # Pick-up location
-        robot_move(base_angle)
-        robot_pick(elbow_angle)
         color = color_sense()
+
         if color == COLORS[0]:
             robot_move(POSITIONS[4])
             robot_release()
+            
 
         elif color == COLORS[1]:
             robot_move(POSITIONS[3])
@@ -256,11 +229,46 @@ def main():
 
         robot_move(POSITIONS[2])
         wait(3000)
-        # color_1 = color_sense()
-        # drop_off_color.uptade({"LEFT" : color_1})
 
+def menu():
+    display.text()
+    pass
 
+# This is the main part of the program. It is a loop that repeats endlessly.
+#
+# First, the robot moves the object on the left towards the middle.
+# Second, the robot moves the object on the right towards the left.
+# Finally, the robot moves the object that is now in the middle, to the right.
+#
+# Now we have a wheel stack on the left and on the right as before, but they
+# have switched places. Then the loop repeats to do this over and over.
 
+# base_motor.run_angle(10,12)
+# base_motor.reset_angle(0)
+# drop_off_color = {
+#     "LEFT" : "0", "MIDDLE" : "1" , "RIGHT" : "2"
+# }
+        
+initialize()
+
+def main():
+    # initialize()
+    sorting()
+    
+    # base_motor.run_angle(10,11)
+    # base_motor.reset_angle(0)
+    # run = True
+    # if Button.CENTER in ev3.buttons():
+    #     run = False
+    #     # POSITIONS = set_location()
+
+    # # run = set_location()
+    # run = True
+    # base_angle, elbow_angle = set_location()
+    # elbow_motor.run_target(60, 30)
+
+    # base_angle, elbow_angle = set_location()
+    # elbow_motor.run_target(60, 30)
     # while run == True:
 
     #     # Pick-up location
