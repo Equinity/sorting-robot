@@ -18,3 +18,17 @@ from pybricks.tools import wait
     # file_name (str) – Path to the sound file, including extension.
     # volume (percentage: %) – Volume of the sound (Default: 100)
 
+import threading as th
+
+keep_going = True
+def key_capture_thread():
+    global keep_going
+    input()
+    keep_going = False
+
+def do_stuff():
+    th.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
+    while keep_going:
+        print('still going...')
+
+do_stuff()
