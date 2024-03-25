@@ -19,15 +19,13 @@ from pybricks.tools import wait
 # Define the destinations for picking up and moving the packages.
 POSITIONS = [0, 45, 90, 145, 190]
 
-color_freq = []
-
 run = True
 
 # color_freq_count = {}
 color_freq_count = []
 color_freq_high = []
 
-COLORS = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.BLACK]
+COLORS = [Color.GREEN, Color.BLUE, Color.RED, Color.YELLOW, Color.BLACK , Color.BROWN]
 
 # Initialize the EV3 Brick
 ev3 = EV3Brick()
@@ -90,12 +88,14 @@ def initialize():
     base_motor.run(-60)
     while not base_switch.pressed():
         wait(10)
-    base_motor.run_angle(10,11) # Micro adjustment (needs tweaking for every single robot)
-    base_motor.reset_angle(0)
+    base_motor.run_angle(10,8) # Micro adjustment (needs tweaking for every single robot)
     base_motor.hold()
+    base_motor.reset_angle(0)
+
 
     # Play sound to indicate that the initialization is complete.
     ev3.speaker.play_notes(["E4/16"])
+    return base_motor.angle(), elbow_motor.angle()
 
 def robot_pick(angle):
     # This function it lowers the elbow, closes the
@@ -117,61 +117,66 @@ def robot_release():
     # release the package. Then it raises its arm again.
 
     # Lower the arm to put the package on the ground.
-    elbow_motor.run_target(60, -40)
+    elbow_motor.run_target(60, -25)
     # Open the gripper to release the package.
     gripper_motor.run_target(200, -90)
     # Raise the arm.
     elbow_motor.run_target(60, 20)
 
+def rgbp_to_hex(rgbp):
+    rgb = []
+    for i in rgb:
+        i = round(i/100*255)
+        rgb.append(i)
+    tuple(rgbp)
+    return '#%02x%02x%02x' % rgb
+
+def distance_different_hex():
+    pass
+
+
 
 def color_sense():
     # function for identifying color of package
-    # wait(3000)
 
-    '''LÖSING 0'''
-    # color = color_sense.color()
-    # if color == Color.RED:
-    #     return Color.RED 
-    # elif color == Color.BLACK:
-    #     return Color.BLUE 
-    # elif color == Color.BLUE:
-    #     return Color.BLUE
-    # elif color == Color.GREEN:
-    #     return Color.GREEN
-    # elif color == Color.YELLOW:
-    #     return Color.YELLOW 
-    # else:
-    #     print('stfu')
-    #     return None
+    '''LÖSNING 1
+    4x2 Grön ger bara Color.blue readings vilket innebär att den får exakt samma avläsning som 4x2 Blå == color() måste överges'''
 
-    '''LÖSNING 1 ----- inte bulletproof'''
-    for i in len(color_freq):
-        if i == 1000:
-            pass
-        else:
-            color_sensed = color_sense.color()
-            color_freq.append(color_sensed)
-    
-    print(len(color_freq))
+    # color_freq = []
+    # color_freq_high = []
 
-    for i in COLORS:
-        if color_freq.count(i) > 50: # mst tweaka '50'
-            color_freq_high.append(color_freq.count(i))
-    
-    print(color_freq_high)
+    # while len(color_freq) is not 500: # hur många gånger färgen läses av
+    #     color_sensed = color_sensor.color()
+    #     color_freq.append(color_sensed)
 
-    if len(color_freq_high) < 2:
-        print(color_freq_high[0])
-        return color_freq_high[0]
-    else:
-        print('blå')
-        return Color.BLUE
-    
-    ''' LÖSING 3 '''
     # for i in COLORS:
-    #     color_freq_count.update({i:color_freq.count(i)})
-    # print(color_freq_count)
+    #     if color_freq.count(i) > 1: # förekomster av en färg under avläsnings fasen
+    #         color_freq_high.append(i)
+    #         color_freq_high.append(color_freq.count(i))
+    
+    # print(color_freq_high)
 
+    # if len(color_freq_high) == 2:
+    #     print(color_freq[0])
+    #     return color_freq[0]
+    # else:
+    #     if color_freq_high[0] == Color.GREEN:
+    #         if color_freq_high[1] > color_freq_high[3]:
+    #             return Color.GREEN
+    #         else:
+    #             return Color.BLUE
+    #     else:
+    #         pass
+    
+    ''' LÖSING 2 '''
+    # color_sensed = rgbp_to_hex(color_sensor.rgb())
+
+
+
+    # blå (3, 10, 52) (0, 2, 10)
+    # Gul (44, 26, 16) (10, 6, 2)
+    # Röd (35, 4, 12) (8, 0, 0)
+    # Grön (6, 26, 24) (1, 6, 3)
     
 
 
@@ -201,7 +206,7 @@ def check_location(position, angle):
 
 def sorting():
     while run == True:
-        if Button.CENTER in ev3.buttons():
+        if Button.CENTER in ev3.buttons.pressed():
             run = False
             # POSITIONS = set_location()
         
@@ -231,7 +236,7 @@ def sorting():
         wait(3000)
 
 def menu():
-    display.text()
+    ev3.display.text()
     pass
 
 # This is the main part of the program. It is a loop that repeats endlessly.
@@ -249,11 +254,12 @@ def menu():
 #     "LEFT" : "0", "MIDDLE" : "1" , "RIGHT" : "2"
 # }
         
-initialize()
+# initialize()
+
 
 def main():
-    # initialize()
-    sorting()
+    pick_up_location_move, pick_up_location_pick = initialize()
+    # sorting()
     
     # base_motor.run_angle(10,11)
     # base_motor.reset_angle(0)
@@ -263,38 +269,53 @@ def main():
     #     # POSITIONS = set_location()
 
     # # run = set_location()
-    # run = True
+    run = True
     # base_angle, elbow_angle = set_location()
     # elbow_motor.run_target(60, 30)
 
     # base_angle, elbow_angle = set_location()
     # elbow_motor.run_target(60, 30)
-    # while run == True:
 
-    #     # Pick-up location
-    #     robot_move(base_angle)
-    #     robot_pick(elbow_angle)
-    #     color = color_sense()
-    #     if color == COLORS[0]:
-    #         robot_move(POSITIONS[4])
-    #         robot_release()
+    while run == True:
+        if Button.CENTER in ev3.buttons.pressed():
+            print('bruh')
+        else:
+            # Pick-up location
+            robot_move(pick_up_location_move)
+            # robot_pick(pick_up_location_pick)
+            robot_pick(-25)
+            # robot_move(POSITIONS[0])
+            # robot_release()
+            # robot_move(POSITIONS[1])
+            # robot_release()
+            # robot_move(POSITIONS[2])
+            # robot_release()
+            # robot_move(POSITIONS[3])
+            # robot_release()
+            # robot_move(POSITIONS[4])
+            # robot_release()
 
-    #     elif color == COLORS[1]:
-    #         robot_move(POSITIONS[3])
-    #         robot_release()
+            color = color_sense()
+            if color == COLORS[0]:
+                robot_move(POSITIONS[4])
+                robot_release()
 
-    #     elif color == COLORS[2]:
-    #         robot_move(POSITIONS[2])
-    #         robot_release()
+            elif color == COLORS[1]:
+                robot_move(POSITIONS[3])
+                robot_release()
 
-    #     else:
-    #         robot_move(POSITIONS[1])
-    #         robot_release()
+            elif color == COLORS[2]:
+                robot_move(POSITIONS[2])
+                robot_release()
 
-    #     robot_move(POSITIONS[2])
-    #     wait(3000)
-    #     # color_1 = color_sense()
-    #     # drop_off_color.uptade({"LEFT" : color_1})
+            else:
+                robot_move(POSITIONS[1])
+                robot_release()
+
+            robot_move(POSITIONS[2])
+            wait(3000)
+            # color_1 = color_sense()
+            # drop_off_color.uptade({"LEFT" : color_1})
 
     # while True:
     #     print(color_sensor.color())

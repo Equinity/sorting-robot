@@ -1,20 +1,25 @@
-from pybricks.hubs import EV3Brick as ev3
-from pybricks.ev3devices import Motor, TouchSensor, ColorSensor
-from pybricks.parameters import Port, Stop, Direction
-from pybricks.tools import wait
+# kladd för color_sense.rgb()
 
-# buttons()
-# Check which buttons on the EV3 Brick are currently pressed.
-# Returns List of pressed buttons.
-# Return type List of Button
+# def rgb_to_hex(rgb):
+#     return '#%02x%02x%02x' % rgb
 
-# classmethod sound.beep(frequency=500, duration=100, volume=30)
-# ljud/sound
+# test1 = (12, 12, 12)
+# rgb = []
+# for i in test1:
+#     i = round(i/100*255)
+#     rgb.append(i)
+#     print(rgb)
+#     if len(rgb) == 3:
+#         print(rgb)
+#         rgb = tuple(rgb)
+#         print(rgb_to_hex(rgb))
 
-# classmethod sound.beeps(number)
-# Play a number of default beeps with a brief pause in between.
+def hex_to_int(s):
+    return [int(s[i:i+2], 16) for i in range(1,7,2)]
 
-# classmethod sound.file(file_name, volume=100)
-    # file_name (str) – Path to the sound file, including extension.
-    # volume (percentage: %) – Volume of the sound (Default: 100)
+print(hex_to_int((12,12,12)))
+
+
+
+
 
