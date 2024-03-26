@@ -169,7 +169,7 @@ def color_sense():
     #         pass
     
     ''' LÖSING 2 '''
-    # color_sensed = rgbp_to_hex(color_sensor.rgb())
+    color_sensed = rgbp_to_hex(color_sensor.rgb())
 
 
 
@@ -278,7 +278,7 @@ def main():
 
     while run == True:
         if Button.CENTER in ev3.buttons.pressed():
-            print('bruh')
+            menu()
         else:
             # Pick-up location
             robot_move(pick_up_location_move)
