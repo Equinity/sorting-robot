@@ -15,6 +15,7 @@ from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor, TouchSensor, ColorSensor
 from pybricks.parameters import Port, Stop, Direction, Color, Button
 from pybricks.tools import wait
+import math # används i color_distance
 
 # Define the destinations for picking up and moving the packages.
 POSITIONS = [0, 45, 90, 145, 190]
@@ -25,7 +26,8 @@ run = True
 color_freq_count = []
 color_freq_high = []
 
-COLORS = [Color.GREEN, Color.BLUE, Color.RED, Color.YELLOW, Color.BLACK , Color.BROWN]
+# COLORS = [Color.GREEN, Color.BLUE, Color.RED, Color.YELLOW, Color.BLACK , Color.BROWN]
+COLORS = []
 
 # Initialize the EV3 Brick
 ev3 = EV3Brick()
@@ -60,7 +62,7 @@ base_switch = TouchSensor(Port.S1)
 color_sensor = ColorSensor(Port.S2)
 
 # Calibrate all the motors
-def initialize():
+def initialize_movment():
     # Initialize the gripper. First rotate the motor until it stalls.
     # Stalling means that it cannot move any further. This position
     # corresponds to the closed position. Then rotate the motor
@@ -97,6 +99,28 @@ def initialize():
     ev3.speaker.play_notes(["E4/16"])
     return base_motor.angle(), elbow_motor.angle()
 
+def initialize_colors():
+    ev3.screen.print("Initializing colors")
+    color = []
+    while len(COLORS) < 3:
+
+        ev3.screen.print("Put a 4x2 brick of a new desired color in the pick-up location n/Press the middle button when done")
+        if Button.center in ev3.buttons.pressed():
+            robot_move(POSITIONS[0])
+            robot_pick(POSITIONS[0])
+            color.append(color_sense())
+
+            ev3.screen.print("Put a 2x2 brick of the same desired color as th 4x2 in the pick-up location n/Press the middle button when done")
+            if Button.center in ev3.buttons.pressed():
+                robot_move(POSITIONS[0])
+                robot_pick(POSITIONS[0])
+                color.append(color_sense())
+                COLORS.append(tuple(color))
+                color = []
+    pass
+
+
+
 def robot_pick(angle):
     # This function it lowers the elbow, closes the
     # gripper, and raises the elbow to pick up the package.
@@ -125,16 +149,25 @@ def robot_release():
 
 def rgbp_to_hex(rgbp):
     rgb = []
-    for i in rgb:
+    for i in rgbp:
         i = round(i/100*255)
         rgb.append(i)
-    tuple(rgbp)
+    tuple(rgb)
     return '#%02x%02x%02x' % rgb
 
 def distance_different_hex():
+    # göra om hex till rgb igen??
     pass
 
+def color_distance(color1, color2):
+    # Extrahera RGB-komponenterna för varje färg
+    r0, g0, b0 = color1
+    r1, g1, b1 = color2
+    
+    # Beräkna avståndet mellan färgerna
+    distance = math.sqrt((r1 - r0) ** 2 + (g1 - g0) ** 2 + (b1 - b0) ** 2)
 
+    return distance
 
 def color_sense():
     # function for identifying color of package
@@ -169,8 +202,14 @@ def color_sense():
     #         pass
     
     ''' LÖSING 2 '''
+    # gör inte om färgena till hex utan till rgbp 
     color_sensed = rgbp_to_hex(color_sensor.rgb())
+    rgbp = []
+    for i in color_sensed:
+        i = round(i/100*255)
+        rgbp.append(i)
 
+    return tuple(rgbp)
 
 
     # blå (3, 10, 52) (0, 2, 10)
