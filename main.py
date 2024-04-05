@@ -101,24 +101,42 @@ def initialize_movment():
     return base_motor.angle(), elbow_motor.angle()
 
 def initialize_colors():
-    ev3.screen.print("Initializing colors")
-    color = []
+    # ev3.screen.print("Initializing colors") # nödvädigt??
+
+    color_complete= []
+    color_rgb = []
+    available_colors = [("red",Button.LEFT ),("green", Button.RIGHT),("blue", Button.UP),("yellow", Button.DOWN)]
     while len(COLORS) < 3:
+        while not any(ev3.buttons.pressed()) and Button.CENTER in ev3.buttons.pressed():
+            ev3.screen.print("Select witch color\ncalibrate:\nleft:" + available_colors[0][0] +"\night:"+ available_colors[1][0] +"\nup"+ available_colors[2][0] + "\ndown" + available_colors[3][0])
+        ev3.screen.clear()
+        button_pressed = ev3.buttons.pressed()
+        for i in available_colors:
+            if button_pressed == i[1]:
+                color_complete.append[i[0]]
 
-        ev3.screen.print("Put a 4x2 brick of a new desired color in the pick-up location n/Press the middle button when done")
-        if Button.center in ev3.buttons.pressed():
-            robot_move(POSITIONS[0])
-            robot_pick(POSITIONS[0])
-            color.append(color_sense())
 
-            ev3.screen.print("Put a 2x2 brick of the same desired color as th 4x2 in the pick-up location n/Press the middle button when done")
-            if Button.center in ev3.buttons.pressed():
-                robot_move(POSITIONS[0])
-                robot_pick(POSITIONS[0])
-                color.append(color_sense())
-                COLORS.append(tuple(color))
-                color = []
-    pass
+        while Button.CENTER not in ev3.buttons.pressed():
+            ev3.screen.print("Put a 4x2 brick of the selected color in the pick-up location n/Press the middle when done")
+
+        ev3.screen.clear()
+        robot_pick(POSITIONS[0])
+        color_rgb.append(color_sensor.rgb())
+        robot_release(POSITIONS[0])
+
+        while Button.CENTER not in ev3.buttons.pressed():
+            ev3.screen.print("Put a 2x2 brick of the selected color in the pick-up location n/Press the middle when done")
+
+        ev3.screen.clear()
+        robot_pick(POSITIONS[0])
+        color_rgb.append(color_sensor.rgb())
+        robot_release(POSITIONS[0])
+        color_complete.append(tuple(color_rgb))
+        COLORS.append(tuple(color_complete))
+        color_complete = []
+        color_rgb = []
+
+    return
 
 
 
@@ -146,27 +164,41 @@ def robot_release(position):
     # Raise the arm.
     elbow_motor.run_target(60, 20)
 
-def rgbp_to_hex(rgbp):
-    rgb = []
-    for i in rgbp:
-        i = round(i/100*255)
-        rgb.append(i)
-    tuple(rgb)
-    return '#%02x%02x%02x' % rgb
+def color_distance(color1rgb, color2rgb):
+    color1rgbp = []
+    color2rgbp = []
 
-def distance_different_hex():
-    # göra om hex till rgb igen??
-    pass
+    for i in color1rgb:
+        i = i/100*255 # round()
+        color1rgbp.append(i)
 
-def color_distance(color1, color2):
+    for i in color2rgb:
+        i = i/100*255
+        color2rgbp.append(i)
+
+    tuple(color1rgbp)
+    tuple(color2rgbp)
+
     # Extrahera RGB-komponenterna för varje färg
-    r0, g0, b0 = color1
-    r1, g1, b1 = color2
+    r0, g0, b0 = color1rgbp
+    r1, g1, b1 = color2rgbp
     
     # Beräkna avståndet mellan färgerna
     distance = math.sqrt((r1 - r0) ** 2 + (g1 - g0) ** 2 + (b1 - b0) ** 2)
 
     return distance
+
+def closest_color(color):
+    closest_color_name = []
+    closest_color_distance = 9999999999
+
+    for i in COLORS:
+        for j in i[1]:
+            if color_distance(color,j) < closest_color_distance:
+                closest_color_distance = color_distance(color, j)
+                closest_color_name = i[0]
+
+    return closest_color_name
 
 def color_sense():
     # function for identifying color of package
@@ -201,6 +233,7 @@ def color_sense():
     #         pass
     
     ''' LÖSING 2 '''
+
     # gör inte om färgena till hex utan till rgbp
     color_sensed = rgbp_to_hex(color_sensor.rgb())
     rgbp = []
@@ -208,8 +241,18 @@ def color_sense():
         i = round(i/100*255)
         rgbp.append(i)
 
-    return tuple(rgbp)
+    # gör inte om färgena till hex utan till rgbp 
+    # color_sensed = rgbp_to_hex(color_sensor.rgb())
+    # rgbp = []
+    # for i in color_sensed:
+    #     i = round(i/100*255)
+    #     rgbp.append(i)
 
+
+    # return tuple(rgbp)
+
+    '''LÖSNING 3'''
+    return closest_color(color_sensor.rgb())
 
     # blå (3, 10, 52) (0, 2, 10)
     # Gul (44, 26, 16) (10, 6, 2)
@@ -321,6 +364,69 @@ def main():
     menu()
     # wait(1500)
     sorting()
+    pick_up_location_move, pick_up_location_pick = initialize_movment()
+    COLORS = initialize_colors()
+    # sorting()
+    
+    # base_motor.run_angle(10,11)
+    # base_motor.reset_angle(0)
+    # run = True
+    # if Button.CENTER in ev3.buttons():
+    #     run = False
+    #     # POSITIONS = set_location()
+
+    # # run = set_location()
+    run = True
+    # base_angle, elbow_angle = set_location()
+    # elbow_motor.run_target(60, 30)
+
+    # base_angle, elbow_angle = set_location()
+    # elbow_motor.run_target(60, 30)
+
+    while run == True:
+        if Button.CENTER in ev3.buttons.pressed():
+            menu()
+        else:
+            # Pick-up location
+            robot_move(pick_up_location_move)
+            # robot_pick(pick_up_location_pick)
+            robot_pick(-25)
+            # robot_move(POSITIONS[0])
+            # robot_release()
+            # robot_move(POSITIONS[1])
+            # robot_release()
+            # robot_move(POSITIONS[2])
+            # robot_release()
+            # robot_move(POSITIONS[3])
+            # robot_release()
+            # robot_move(POSITIONS[4])
+            # robot_release()
+
+            color = color_sense()
+            if color == COLORS[0]:
+                robot_move(POSITIONS[4])
+                robot_release()
+
+            elif color == COLORS[1]:
+                robot_move(POSITIONS[3])
+                robot_release()
+
+            elif color == COLORS[2]:
+                robot_move(POSITIONS[2])
+                robot_release()
+
+            else:
+                robot_move(POSITIONS[1])
+                robot_release()
+
+            robot_move(POSITIONS[2])
+            wait(3000)
+            # color_1 = color_sense()
+            # drop_off_color.uptade({"LEFT" : color_1})
+
+    # while True:
+    #     print(color_sensor.color())
+    #     wait(800)
 
 if __name__ == "__main__":
     main()

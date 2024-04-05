@@ -1,7 +1,13 @@
 '''kladd för color_sense.rgb()'''
 
-# def rgb_to_hex(rgb):
+# def rgbp_to_hex(rgbp):
+#     rgb = []
+#     for i in rgbp:
+#         i = round(i/100*255)
+#         rgb.append(i)
+#     tuple(rgb)
 #     return '#%02x%02x%02x' % rgb
+
 
 # test1 = (12, 12, 12)
 # rgb = []
