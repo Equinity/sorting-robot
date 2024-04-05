@@ -23,7 +23,6 @@ POSITIONS = []
 
 run = True
 
-# color_freq_count = {}
 color_freq_count = []
 color_freq_high = []
 
@@ -101,31 +100,50 @@ def initialize_movment():
     return base_motor.angle(), elbow_motor.angle()
 
 def initialize_colors():
-    # ev3.screen.print("Initializing colors") # nödvädigt??
-
     color_complete= []
     color_rgb = []
-    available_colors = [("red",Button.LEFT ),("green", Button.RIGHT),("blue", Button.UP),("yellow", Button.DOWN)]
+    available_colors = [("red",Button.LEFT ),("green", Button.RIGHT),("blue", Button.UP),("yellow", Button.DOWN)] # ändra på vad knapparna ska heta när de printars
+
     while len(COLORS) < 3:
+        ev3.screen.print("Select witch color\n to calibrate:") #\nleft:" + available_colors[0][0] +"\nright:"+ available_colors[1][0] +"\nup"+ available_colors[2][0] + "\ndown" + available_colors[3][0])
+        
+        for i in available_colors:
+            ev3.screen.print(available_colors[i][0], + ": " + available_colors[i][1])
+
+        # for i in available_colors:
+        #     for j in i:
+        #         ev3.screen.print(available_colors[i][j])
+        
         while not any(ev3.buttons.pressed()) and Button.CENTER in ev3.buttons.pressed():
-            ev3.screen.print("Select witch color\ncalibrate:\nleft:" + available_colors[0][0] +"\night:"+ available_colors[1][0] +"\nup"+ available_colors[2][0] + "\ndown" + available_colors[3][0])
+            button_pressed = ev3.buttons.pressed() # måste testas
         ev3.screen.clear()
-        button_pressed = ev3.buttons.pressed()
         for i in available_colors:
             if button_pressed == i[1]:
                 color_complete.append[i[0]]
+                available_colors.pop(i)
 
+        # while not any(ev3.buttons.pressed()) and Button.CENTER in ev3.buttons.pressed():
+        #     wait(1)
+        # ev3.screen.clear()
+        # button_pressed = ev3.buttons.pressed() # måste testas
+        # for i in available_colors:
+        #     if button_pressed == i[1]:
+        #         color_complete.append[i[0]]
+        #         available_colors.pop(i)
 
-        while Button.CENTER not in ev3.buttons.pressed():
-            ev3.screen.print("Put a 4x2 brick of the selected color in the pick-up location n/Press the middle when done")
+        ev3.screen.print("Put a 4x2 brick of the selected color in the pick-up location \nPress the middle when done")
+
+        while Button.CENTER not in ev3.buttons.pressed(): 
+            wait(1)
 
         ev3.screen.clear()
         robot_pick(POSITIONS[0])
         color_rgb.append(color_sensor.rgb())
         robot_release(POSITIONS[0])
+        ev3.screen.print("Put a 2x2 brick of the selected color in the pick-up location \nPress the middle when done")
 
         while Button.CENTER not in ev3.buttons.pressed():
-            ev3.screen.print("Put a 2x2 brick of the selected color in the pick-up location n/Press the middle when done")
+            wait(1)
 
         ev3.screen.clear()
         robot_pick(POSITIONS[0])
@@ -135,7 +153,8 @@ def initialize_colors():
         COLORS.append(tuple(color_complete))
         color_complete = []
         color_rgb = []
-
+    
+    print(COLORS) # check
     return
 
 
@@ -176,8 +195,8 @@ def color_distance(color1rgb, color2rgb):
         i = i/100*255
         color2rgbp.append(i)
 
-    tuple(color1rgbp)
-    tuple(color2rgbp)
+    # tuple(color1rgbp) # nödvändigt?
+    # tuple(color2rgbp)
 
     # Extrahera RGB-komponenterna för varje färg
     r0, g0, b0 = color1rgbp
@@ -185,7 +204,7 @@ def color_distance(color1rgb, color2rgb):
     
     # Beräkna avståndet mellan färgerna
     distance = math.sqrt((r1 - r0) ** 2 + (g1 - g0) ** 2 + (b1 - b0) ** 2)
-
+    print(distance) # check
     return distance
 
 def closest_color(color):
@@ -235,11 +254,11 @@ def color_sense():
     ''' LÖSING 2 '''
 
     # gör inte om färgena till hex utan till rgbp
-    color_sensed = rgbp_to_hex(color_sensor.rgb())
-    rgbp = []
-    for i in color_sensed:
-        i = round(i/100*255)
-        rgbp.append(i)
+    # color_sensed = rgbp_to_hex(color_sensor.rgb())
+    # rgbp = []
+    # for i in color_sensed:
+    #     i = round(i/100*255)
+    #     rgbp.append(i)
 
     # gör inte om färgena till hex utan till rgbp
     # color_sensed = rgbp_to_hex(color_sensor.rgb())
@@ -361,6 +380,7 @@ def menu():
 
 def main():
     initialize_movment()
+    initialize_colors()
     menu()
     # wait(1500)
     sorting()
