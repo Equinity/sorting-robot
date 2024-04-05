@@ -241,7 +241,7 @@ def color_sense():
         i = round(i/100*255)
         rgbp.append(i)
 
-    # gör inte om färgena till hex utan till rgbp 
+    # gör inte om färgena till hex utan till rgbp
     # color_sensed = rgbp_to_hex(color_sensor.rgb())
     # rgbp = []
     # for i in color_sensed:
@@ -364,69 +364,6 @@ def main():
     menu()
     # wait(1500)
     sorting()
-    pick_up_location_move, pick_up_location_pick = initialize_movment()
-    COLORS = initialize_colors()
-    # sorting()
-    
-    # base_motor.run_angle(10,11)
-    # base_motor.reset_angle(0)
-    # run = True
-    # if Button.CENTER in ev3.buttons():
-    #     run = False
-    #     # POSITIONS = set_location()
-
-    # # run = set_location()
-    run = True
-    # base_angle, elbow_angle = set_location()
-    # elbow_motor.run_target(60, 30)
-
-    # base_angle, elbow_angle = set_location()
-    # elbow_motor.run_target(60, 30)
-
-    while run == True:
-        if Button.CENTER in ev3.buttons.pressed():
-            menu()
-        else:
-            # Pick-up location
-            robot_move(pick_up_location_move)
-            # robot_pick(pick_up_location_pick)
-            robot_pick(-25)
-            # robot_move(POSITIONS[0])
-            # robot_release()
-            # robot_move(POSITIONS[1])
-            # robot_release()
-            # robot_move(POSITIONS[2])
-            # robot_release()
-            # robot_move(POSITIONS[3])
-            # robot_release()
-            # robot_move(POSITIONS[4])
-            # robot_release()
-
-            color = color_sense()
-            if color == COLORS[0]:
-                robot_move(POSITIONS[4])
-                robot_release()
-
-            elif color == COLORS[1]:
-                robot_move(POSITIONS[3])
-                robot_release()
-
-            elif color == COLORS[2]:
-                robot_move(POSITIONS[2])
-                robot_release()
-
-            else:
-                robot_move(POSITIONS[1])
-                robot_release()
-
-            robot_move(POSITIONS[2])
-            wait(3000)
-            # color_1 = color_sense()
-            # drop_off_color.uptade({"LEFT" : color_1})
-
-    # while True:
-    #     print(color_sensor.color())
-    #     wait(800)
 
 if __name__ == "__main__":
     main()
