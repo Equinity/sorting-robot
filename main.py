@@ -157,8 +157,6 @@ def initialize_colors():
     print(COLORS) # check
     return
 
-
-
 def robot_pick(position):
     # This function it lowers the elbow, closes the
     # gripper, and raises the elbow to pick up the package.
@@ -204,7 +202,9 @@ def color_distance(color1rgb, color2rgb):
     
     # Beräkna avståndet mellan färgerna
     distance = math.sqrt((r1 - r0) ** 2 + (g1 - g0) ** 2 + (b1 - b0) ** 2)
+
     print(distance) # check
+
     return distance
 
 def closest_color(color):
@@ -216,6 +216,8 @@ def closest_color(color):
             if color_distance(color,j) < closest_color_distance:
                 closest_color_distance = color_distance(color, j)
                 closest_color_name = i[0]
+
+    print(closest_color_name) # check
 
     return closest_color_name
 
@@ -360,14 +362,6 @@ def menu():
         if Button.DOWN in ev3.buttons.pressed():
             return
 
-# This is the main part of the program. It is a loop that repeats endlessly.
-#
-# First, the robot moves the object on the left towards the middle.
-# Second, the robot moves the object on the right towards the left.
-# Finally, the robot moves the object that is now in the middle, to the right.
-#
-# Now we have a wheel stack on the left and on the right as before, but they
-# have switched places. Then the loop repeats to do this over and over.
 
 # base_motor.run_angle(10,12)
 # base_motor.reset_angle(0)
