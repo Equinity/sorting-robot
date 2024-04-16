@@ -111,7 +111,14 @@ def initialize_colors():
         for i in available_colors:
                 ev3.screen.print(i[0],i[1])
 
+        
         while not any(ev3.buttons.pressed()):
+            wait(1)
+        
+        while not any(Button.LEFT, Button.RIGHT, Button.UP, Button.DOWN) in ev3.buttons.pressed():
+            wait(1)
+
+        while not any(available_colors_buttons) in ev3.buttons.pressed():
             wait(1)
 
         ev3.screen.clear()
@@ -124,6 +131,7 @@ def initialize_colors():
                 # print(color_complete)
                 available_colors.remove(i)
                 available_colors_buttons.remove(i[1])
+        button_pressed = []
 
 
         ev3.screen.print("Put a 4x2 brick of\nthe selected color\nin the pick-up location \nPress the middle\nbutton when done")
@@ -272,14 +280,24 @@ def set_pickup():
 
 def check_location():
     # color = color_sense()
-    print(gripper_motor.angle())
+    # print(gripper_motor.angle())
+    # while gripper_motor.angle() > -10:
+    #     if gripper_motor.angle() > -10:
+    #         ev3.speaker.say("No package")
+    #         gripper_motor.run_target(200,-80)
+    #         # wait(TIME)
+    #     else:
+    #         return
+        
+
     while gripper_motor.angle() > -10:
-        if gripper_motor.angle() > -10:
-            ev3.speaker.say("No package")
-            gripper_motor.run_target(200,-80)
-            wait(TIME)
-        else:
-            return
+        ev3.speaker.say("No package")
+        gripper_motor.run_target(200,-80)
+    return
+
+def check_locations():
+    
+    pass
 
 def sorting():
     ev3.screen.print("HOLD CENTER\nBUTTON FOR\nSAFE STOP")
@@ -303,18 +321,26 @@ def sorting():
                             menu()
                             return
             else:
-                check_location()
+                # check_location()
+                ev3.speaker.say("No package")
+                wait(TIME)
 
 def menu():
-    ev3.screen.print("MENU\nLeft: Location set\nRight: Schedule\nDown: Return")
+    ev3.screen.print("MENU\nUp: Check Locations\nLeft: Location set\nRight: Schedule\nDown: Return")
     wait(1000)
     global TIME
     while True:
+        if Button.UP in ev3.buttons.pressed():
+            ev3.screen.clear()
+            check_locations()
+            # return
+            pass
         if Button.LEFT in ev3.buttons.pressed():
-            wait(300)
+            wait(300)  # ?
             ev3.screen.clear()
             set_location()
-            return
+            # return
+            pass
         if Button.RIGHT in ev3.buttons.pressed():
             ev3.screen.clear()
             ev3.screen.print("The schedule is\n", time/1000, "seconds\nPress up or down\nto change\nOK with Center")
@@ -331,6 +357,7 @@ def menu():
                     ev3.screen.print("Schedule is now\n", time/1000, "seconds")
             ev3.screen.clear()
             TIME = time
+            pass
         if Button.DOWN in ev3.buttons.pressed():
             return
 
