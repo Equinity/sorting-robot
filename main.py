@@ -92,7 +92,7 @@ def initialize_movment():
 
     # Play sound to indicate that the initialization is complete.
     ev3.speaker.play_notes(["E4/16"])
-    return base_motor.angle(), elbow_motor.angle()
+    return
 
 def initialize_colors():
     color_complete= []
@@ -144,7 +144,7 @@ def initialize_colors():
         COLORS.append(tuple(color_complete))
         color_complete = []
         color_rgb = []
-    
+
     print(COLORS) # check
 
     return
@@ -214,9 +214,13 @@ def color_sense():
     return closest_color(color_sensor.rgb())
 
 def set_location():
-    POSITIONS.clear()
-    ev3.screen.print("Please calibrate the\npick-up and drop-off\nlocations and\nconfirm with center.")
+    global POSITIONS
+    POSITIONS = POSITIONS[:1]
+    ev3.screen.print("Please calibrate the\ndrop-off locations and\nconfirm with center.")
     while len(POSITIONS) < 5:
+        for i in COLORS:
+            for j in i[0]:
+                ev3.screen.print("Please set color\n" + j)
         while Button.CENTER not in ev3.buttons.pressed():
             while Button.LEFT in ev3.buttons.pressed():
                 base_motor.run(50)
@@ -233,6 +237,29 @@ def set_location():
         while Button.CENTER in ev3.buttons.pressed():
             pass
         POSITIONS.append((base_motor.angle(), elbow_motor.angle()))
+    ev3.screen.clear()
+    elbow_motor.run_target(60, 5)
+    return
+
+def set_pickup():
+    ev3.screen.print("Please calibrate the\npick-up location and\nconfirm with center.")
+    while len(POSITIONS) < 1:
+        while Button.CENTER not in ev3.buttons.pressed():
+            while Button.LEFT in ev3.buttons.pressed():
+                base_motor.run(50)
+            while Button.RIGHT in ev3.buttons.pressed():
+                base_motor.run(-50)
+            while Button.UP in ev3.buttons.pressed():
+                elbow_motor.run(50)
+            while Button.DOWN in ev3.buttons.pressed():
+                elbow_motor.run(-50)
+
+            base_motor.hold()
+            elbow_motor.hold()
+
+        while Button.CENTER in ev3.buttons.pressed():
+            pass
+        POSITIONS[0] = ((base_motor.angle(), elbow_motor.angle()))
     ev3.screen.clear()
     elbow_motor.run_target(60, 5)
     return
@@ -295,11 +322,12 @@ def menu():
             return
 
 def main():
+    initialize_movment()
+    set_pickup()
+    initialize_colors((base_motor,elbow_motor))
+    set_location()
     # base_motor,elbow_motor=initialize_movment()
     # initialize_colors((base_motor,elbow_motor))
-    initialize_movment()
-    set_location()
-    initialize_colors()
     menu()
     # wait(1500)
     sorting()
