@@ -63,7 +63,10 @@ import math
 # distance = color_distance(color1, color2)
 # print("Avståndet mellan färgerna är:", distance)
 
-available_colors = [["red",Button.LEFT],["green", Button.RIGHT],["blue", Button.UP],["yellow", Button.DOWN]] # ändra på vad knapparna ska heta när de printars
+# available_colors = [["red",Button.LEFT],["green", Button.RIGHT],["blue", Button.UP],["yellow", Button.DOWN]] # ändra på vad knapparna ska heta när de printars
 
-new_list = [i for i in available_colors.pop(i)]
-print(new_list)
+# new_list = [i for i in available_colors.pop(i)]
+# print(new_list)
+
+list = [('red', [(45, 6, 23), (10, 1, 3)]), ('yellow', [(68, 49, 30), (12, 9, 1)]), ('blue', [(5, 14, 74), (0, 2, 13)]), ('green', [(8, 35, 37), (2, 10, 8)])]
+print(list[0][0])
