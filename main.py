@@ -271,11 +271,12 @@ def set_pickup():
     return
 
 def check_location():
-    robot_pick(POSITIONS[0])
     # color = color_sense()
-    while elbow_motor.angle() < -10:
-        if elbow_motor.angle() > -10:
+    print(gripper_motor.angle())
+    while gripper_motor.angle() > -10:
+        if gripper_motor.angle() > -10:
             ev3.speaker.say("No package")
+            gripper_motor.run_target(200,-80)
             wait(TIME)
         else:
             return
@@ -287,7 +288,7 @@ def sorting():
         # while Button.CENTER not in ev3.buttons.pressed() and run == True:
         while run == True:
             robot_pick(POSITIONS[0])
-            if elbow_motor.angle() < -10:
+            if gripper_motor.angle() < -10:
                 color = color_sense()
                 for color_name, position in POSITIONS[1:5]:
                     if color == color_name:
@@ -296,11 +297,11 @@ def sorting():
                         run = False
                         ev3.screen.clear()
                         ev3.screen.print("SAFE STOP\n\nPress Left to\nenter menu")
-                        wait(2000)
-                if Button.LEFT in ev3.buttons.pressed():
-                    ev3.screen.clear()
-                    menu()
-                    return
+                        wait(1)
+                        if Button.LEFT in ev3.buttons.pressed():
+                            ev3.screen.clear()
+                            menu()
+                            return
             else:
                 check_location()
 
