@@ -221,7 +221,7 @@ def set_location():
     while len(POSITIONS) < 5:
         for i in COLORS:
             ev3.screen.clear()
-            ev3.screen.print("Position for" + i[0])
+            ev3.screen.print("Position for " + i[0])
             while Button.CENTER not in ev3.buttons.pressed():
                 while Button.LEFT in ev3.buttons.pressed():
                     base_motor.run(50)
@@ -237,7 +237,7 @@ def set_location():
 
             while Button.CENTER in ev3.buttons.pressed():
                 pass
-            POSITIONS.append((base_motor.angle(), elbow_motor.angle()))
+            POSITIONS.append((i[0],(base_motor.angle(), elbow_motor.angle())))
     ev3.screen.clear()
     elbow_motor.run_target(60, 5)
     return
@@ -282,18 +282,19 @@ def sorting():
         # while Button.CENTER not in ev3.buttons.pressed() and run == True:
         while run == True:
             robot_pick(POSITIONS[0])
-            color_sense()
-            robot_release(POSITIONS[1])
-
-            if Button.CENTER in ev3.buttons.pressed():
-                run = False
+            color = color_sense()
+            for color_name, position in POSITIONS[1:5]:
+                if color == color_name:
+                    robot_release(position)
+                elif Button.CENTER in ev3.buttons.pressed():
+                    run = False
+                    ev3.screen.clear()
+                    ev3.screen.print("SAFE STOP\n\nPress Left to\nenter menu")
+                    wait(2000)
+            if Button.LEFT in ev3.buttons.pressed():
                 ev3.screen.clear()
-                ev3.screen.print("SAFE STOP\n\nPress Left to\nenter menu")
-                wait(2000)
-        if Button.LEFT in ev3.buttons.pressed():
-            ev3.screen.clear()
-            # menu()
-            return
+                menu()
+                return
 
 def menu():
     ev3.screen.print("MENU\nLeft: Location set\nRight: Schedule\nDown: Return")
