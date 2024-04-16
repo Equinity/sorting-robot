@@ -19,13 +19,16 @@ import math # används i color_distance
 
 # Define the destinations for picking up and moving the packages.
 #POSITIONS = [0, 45, 90, 145, 190]
-POSITIONS = []
+# POSITIONS = []
+POSITIONS = [(-13, -26), ('red', (50, -21)), ('yellow', (50, -21)), ('blue', (93, -21)), ('green', (133, -21))]
 
 run = True
 
 # COLORS = [Color.GREEN, Color.BLUE, Color.RED, Color.YELLOW]
 # COLORS = []
 COLORS = [('red', [(45, 6, 23), (10, 1, 3)]), ('yellow', [(68, 49, 30), (12, 9, 1)]), ('blue', [(5, 14, 74), (0, 2, 13)]), ('green', [(8, 35, 37), (2, 10, 8)])]
+
+TIME = 5000
 
 # Initialize the EV3 Brick
 ev3 = EV3Brick()
@@ -267,13 +270,15 @@ def set_pickup():
     elbow_motor.run_target(60, 5)
     return
 
-def check_location(position):
-    robot_pick(position)
-    color = color_sense()
-    if color == "None":
-        ev3.speaker.say("No package")
-    else:
-        ev3.speaker.say("Package, color:" + str(color))
+def check_location():
+    robot_pick(POSITIONS[0])
+    # color = color_sense()
+    while elbow_motor.angle() < -10:
+        if elbow_motor.angle() > -10:
+            ev3.speaker.say("No package")
+            wait(TIME)
+        else:
+            return
 
 def sorting():
     ev3.screen.print("HOLD CENTER\nBUTTON FOR\nSAFE STOP")
@@ -282,24 +287,27 @@ def sorting():
         # while Button.CENTER not in ev3.buttons.pressed() and run == True:
         while run == True:
             robot_pick(POSITIONS[0])
-            color = color_sense()
-            for color_name, position in POSITIONS[1:5]:
-                if color == color_name:
-                    robot_release(position)
-                elif Button.CENTER in ev3.buttons.pressed():
-                    run = False
+            if elbow_motor.angle() < -10:
+                color = color_sense()
+                for color_name, position in POSITIONS[1:5]:
+                    if color == color_name:
+                        robot_release(position)
+                    elif Button.CENTER in ev3.buttons.pressed():
+                        run = False
+                        ev3.screen.clear()
+                        ev3.screen.print("SAFE STOP\n\nPress Left to\nenter menu")
+                        wait(2000)
+                if Button.LEFT in ev3.buttons.pressed():
                     ev3.screen.clear()
-                    ev3.screen.print("SAFE STOP\n\nPress Left to\nenter menu")
-                    wait(2000)
-            if Button.LEFT in ev3.buttons.pressed():
-                ev3.screen.clear()
-                menu()
-                return
+                    menu()
+                    return
+            else:
+                check_location()
 
 def menu():
     ev3.screen.print("MENU\nLeft: Location set\nRight: Schedule\nDown: Return")
     wait(1000)
-    time = 5000
+    global TIME
     while True:
         if Button.LEFT in ev3.buttons.pressed():
             wait(300)
@@ -321,15 +329,15 @@ def menu():
                     ev3.screen.clear()
                     ev3.screen.print("Schedule is now\n", time/1000, "seconds")
             ev3.screen.clear()
-            return time
+            TIME = time
         if Button.DOWN in ev3.buttons.pressed():
             return
 
 def main():
     initialize_movement()
-    set_pickup()
+    # set_pickup()
     # initialize_colors()
-    set_location()
+    # set_location()
     # base_motor,elbow_motor=initialize_movment()
     # initialize_colors((base_motor,elbow_motor))
     menu()
