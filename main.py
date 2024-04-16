@@ -59,7 +59,7 @@ base_switch = TouchSensor(Port.S1)
 color_sensor = ColorSensor(Port.S2)
 
 # Calibrate all the motors
-def initialize_movment():
+def initialize_movement():
     # Initialize the gripper. First rotate the motor until it stalls.
     # Stalling means that it cannot move any further. This position
     # corresponds to the closed position. Then rotate the motor
@@ -220,23 +220,24 @@ def set_location():
     while len(POSITIONS) < 5:
         for i in COLORS:
             for j in i[0]:
+                ev3.screen.clear()
                 ev3.screen.print("Please set color\n" + j)
-        while Button.CENTER not in ev3.buttons.pressed():
-            while Button.LEFT in ev3.buttons.pressed():
-                base_motor.run(50)
-            while Button.RIGHT in ev3.buttons.pressed():
-                base_motor.run(-50)
-            while Button.UP in ev3.buttons.pressed():
-                elbow_motor.run(50)
-            while Button.DOWN in ev3.buttons.pressed():
-                elbow_motor.run(-50)
+                while Button.CENTER not in ev3.buttons.pressed():
+                    while Button.LEFT in ev3.buttons.pressed():
+                        base_motor.run(50)
+                    while Button.RIGHT in ev3.buttons.pressed():
+                        base_motor.run(-50)
+                    while Button.UP in ev3.buttons.pressed():
+                        elbow_motor.run(50)
+                    while Button.DOWN in ev3.buttons.pressed():
+                        elbow_motor.run(-50)
 
-            base_motor.hold()
-            elbow_motor.hold()
+                    base_motor.hold()
+                    elbow_motor.hold()
 
-        while Button.CENTER in ev3.buttons.pressed():
-            pass
-        POSITIONS.append((base_motor.angle(), elbow_motor.angle()))
+                while Button.CENTER in ev3.buttons.pressed():
+                    pass
+                POSITIONS.append((base_motor.angle(), elbow_motor.angle()))
     ev3.screen.clear()
     elbow_motor.run_target(60, 5)
     return
@@ -259,7 +260,7 @@ def set_pickup():
 
         while Button.CENTER in ev3.buttons.pressed():
             pass
-        POSITIONS[0] = ((base_motor.angle(), elbow_motor.angle()))
+        POSITIONS.append((base_motor.angle(), elbow_motor.angle()))
     ev3.screen.clear()
     elbow_motor.run_target(60, 5)
     return
@@ -322,9 +323,9 @@ def menu():
             return
 
 def main():
-    initialize_movment()
+    initialize_movement()
     set_pickup()
-    initialize_colors((base_motor,elbow_motor))
+    initialize_colors()
     set_location()
     # base_motor,elbow_motor=initialize_movment()
     # initialize_colors((base_motor,elbow_motor))
