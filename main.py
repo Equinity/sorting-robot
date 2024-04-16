@@ -94,13 +94,13 @@ def initialize_movment():
     ev3.speaker.play_notes(["E4/16"])
     return
 
-def initialize_colors(pick_up_location):
+def initialize_colors():
     color_complete= []
     color_rgb = []
     available_colors = [["red",Button.LEFT],["green", Button.RIGHT],["blue", Button.UP],["yellow", Button.DOWN]] # ändra på vad knapparna ska heta när de printars
     available_colors_buttons = [Button.LEFT, Button.RIGHT, Button.UP, Button.DOWN]
 
-    while len(COLORS) < 3:
+    while len(COLORS) < 4:
         button_pressed = []
 
         ev3.screen.print("Select a color")
@@ -112,12 +112,12 @@ def initialize_colors(pick_up_location):
 
         ev3.screen.clear()
         button_pressed = ev3.buttons.pressed() # måste testas
-        print(button_pressed)
+        # print(button_pressed)
         for i in available_colors:
-            print(i[1])
+            # print(i[1])
             if button_pressed[0] == i[1]:
-                print("funkar")
                 color_complete.append(i[0])
+                # print(color_complete)
                 available_colors.remove(i)
                 available_colors_buttons.remove(i[1])
 
@@ -128,18 +128,18 @@ def initialize_colors(pick_up_location):
             wait(1)
 
         ev3.screen.clear()
-        robot_pick(pick_up_location)
+        robot_pick(POSITIONS[0])
         color_rgb.append(color_sensor.rgb())
-        robot_release(pick_up_location)
+        robot_release(POSITIONS[0])
         ev3.screen.print("Put a 2x2 brick of the selected color in the pick-up location \nPress the middle when done")
 
         while Button.CENTER not in ev3.buttons.pressed():
             wait(1)
 
         ev3.screen.clear()
-        robot_pick(base_motor,elbow_motor)
+        robot_pick(POSITIONS[0])
         color_rgb.append(color_sensor.rgb())
-        robot_release(base_motor,elbow_motor)
+        robot_release(POSITIONS[0])
         color_complete.append(color_rgb)
         COLORS.append(tuple(color_complete))
         color_complete = []
@@ -198,7 +198,7 @@ def color_distance(color1rgb, color2rgb):
 
 def closest_color(color):
     closest_color_name = []
-    closest_color_distance = 9999999999
+    closest_color_distance = 999
 
     for i in COLORS:
         for j in i[1]:
@@ -326,6 +326,8 @@ def main():
     set_pickup()
     initialize_colors((base_motor,elbow_motor))
     set_location()
+    # base_motor,elbow_motor=initialize_movment()
+    # initialize_colors((base_motor,elbow_motor))
     menu()
     # wait(1500)
     sorting()
