@@ -19,14 +19,14 @@ import math # används i color_distance
 
 # Define the destinations for picking up and moving the packages.
 #POSITIONS = [0, 45, 90, 145, 190]
-POSITIONS = []
-# POSITIONS = [(-13, -26), ('red', (50, -21)), ('yellow', (50, -21)), ('blue', (93, -21)), ('green', (133, -21))]
+# POSITIONS = []
+POSITIONS = [(-13, -26), ('red', (50, -21)), ('yellow', (50, -21)), ('blue', (93, -21)), ('green', (133, -21))]
 
 run = True
 
 # COLORS = [Color.GREEN, Color.BLUE, Color.RED, Color.YELLOW]
-COLORS = []
-# COLORS = [('red', [(45, 6, 23), (10, 1, 3)]), ('yellow', [(68, 49, 30), (12, 9, 1)]), ('blue', [(5, 14, 74), (0, 2, 13)]), ('green', [(8, 35, 37), (2, 10, 8)])]
+# COLORS = []
+COLORS = [('red', [(45, 6, 23), (10, 1, 3)]), ('yellow', [(68, 49, 30), (12, 9, 1)]), ('blue', [(5, 14, 74), (0, 2, 13)]), ('green', [(8, 35, 37), (2, 10, 8)])]
 
 TIME = 5000
 
@@ -111,10 +111,10 @@ def initialize_colors():
         for i in available_colors:
                 ev3.screen.print(i[0],i[1])
 
-        
+
         while not any(ev3.buttons.pressed()):
             wait(1)
-        
+
         # while not any(Button.LEFT, Button.RIGHT, Button.UP, Button.DOWN) in ev3.buttons.pressed():
         #     wait(1)
 
@@ -134,7 +134,7 @@ def initialize_colors():
         button_pressed = []
 
 
-        ev3.screen.print("Put a 4x2 brick of\nthe selected color\nin the pick-up location \nPress the middle\nbutton when done")
+        ev3.screen.print("Put a 4x2 brick of\nthe selected color\nin the pick-up location\nPress the middle\nbutton when done")
 
         while Button.CENTER not in ev3.buttons.pressed():
             wait(1)
@@ -165,7 +165,7 @@ def robot_pick(position):
     # This function it lowers the elbow, closes the
     # gripper, and raises the elbow to pick up the package.
 
-    base_motor.run_target(60, position[0])
+    base_motor.run_target(2000, position[0])
     # Lower the arm.
     elbow_motor.run_target(60, position[1])
     # Close the gripper to grab the package.
@@ -177,7 +177,7 @@ def robot_release(position):
     # This function lowers the elbow, opens the gripper to
     # release the package. Then it raises its arm again.
 
-    base_motor.run_target(60, position[0])
+    base_motor.run_target(2000, position[0])
     # Lower the arm to put the package on the ground.
     elbow_motor.run_target(60, position[1])
     # Open the gripper to release the package.
@@ -288,7 +288,7 @@ def check_location():
     #         # wait(TIME)
     #     else:
     #         return
-        
+
 
     while gripper_motor.angle() > -10:
         ev3.speaker.say("No package")
@@ -296,7 +296,7 @@ def check_location():
     return
 
 def check_locations():
-    
+
     pass
 
 def sorting():
@@ -323,12 +323,14 @@ def sorting():
             else:
                 # check_location()
                 ev3.speaker.say("No package")
+                gripper_motor.run_target(200,-80)
                 wait(TIME)
 
 def menu():
     ev3.screen.print("MENU\nUp: Check Locations\nLeft: Location set\nRight: Schedule\nDown: Return")
     wait(1000)
     global TIME
+    time = TIME
     while True:
         if Button.UP in ev3.buttons.pressed():
             ev3.screen.clear()
@@ -364,8 +366,8 @@ def menu():
 def main():
     initialize_movement()
     set_pickup()
-    initialize_colors()
-    set_location()
+    # initialize_colors()
+    # set_location()
     # base_motor,elbow_motor=initialize_movment()
     # initialize_colors((base_motor,elbow_motor))
     menu()
