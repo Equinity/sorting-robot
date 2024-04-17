@@ -19,14 +19,14 @@ import math # används i color_distance
 
 # Define the destinations for picking up and moving the packages.
 #POSITIONS = [0, 45, 90, 145, 190]
-# POSITIONS = []
-POSITIONS = [(-13, -26), ('red', (50, -21)), ('yellow', (50, -21)), ('blue', (93, -21)), ('green', (133, -21))]
+POSITIONS = []
+# POSITIONS = [(-13, -26), ('red', (50, -21)), ('yellow', (50, -21)), ('blue', (93, -21)), ('green', (133, -21))]
 
 run = True
 
 # COLORS = [Color.GREEN, Color.BLUE, Color.RED, Color.YELLOW]
-# COLORS = []
-COLORS = [('red', [(45, 6, 23), (10, 1, 3)]), ('yellow', [(68, 49, 30), (12, 9, 1)]), ('blue', [(5, 14, 74), (0, 2, 13)]), ('green', [(8, 35, 37), (2, 10, 8)])]
+COLORS = []
+# COLORS = [('red', [(45, 6, 23), (10, 1, 3)]), ('yellow', [(68, 49, 30), (12, 9, 1)]), ('blue', [(5, 14, 74), (0, 2, 13)]), ('green', [(8, 35, 37), (2, 10, 8)])]
 
 TIME = 5000
 
@@ -115,11 +115,11 @@ def initialize_colors():
         while not any(ev3.buttons.pressed()):
             wait(1)
         
-        while not any(Button.LEFT, Button.RIGHT, Button.UP, Button.DOWN) in ev3.buttons.pressed():
-            wait(1)
+        # while not any(Button.LEFT, Button.RIGHT, Button.UP, Button.DOWN) in ev3.buttons.pressed():
+        #     wait(1)
 
-        while not any(available_colors_buttons) in ev3.buttons.pressed():
-            wait(1)
+        # while not any(available_colors_buttons) in ev3.buttons.pressed():
+        #     wait(1)
 
         ev3.screen.clear()
         button_pressed = ev3.buttons.pressed() # måste testas
@@ -340,7 +340,7 @@ def menu():
             ev3.screen.clear()
             set_location()
             # return
-            pass
+            # pass
         if Button.RIGHT in ev3.buttons.pressed():
             ev3.screen.clear()
             ev3.screen.print("The schedule is\n", time/1000, "seconds\nPress up or down\nto change\nOK with Center")
@@ -357,15 +357,15 @@ def menu():
                     ev3.screen.print("Schedule is now\n", time/1000, "seconds")
             ev3.screen.clear()
             TIME = time
-            pass
+            # pass
         if Button.DOWN in ev3.buttons.pressed():
             return
 
 def main():
     initialize_movement()
-    # set_pickup()
-    # initialize_colors()
-    # set_location()
+    set_pickup()
+    initialize_colors()
+    set_location()
     # base_motor,elbow_motor=initialize_movment()
     # initialize_colors((base_motor,elbow_motor))
     menu()
