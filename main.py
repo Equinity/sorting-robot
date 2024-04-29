@@ -1,32 +1,28 @@
 #!/usr/bin/env pybricks-micropython
 
 """
-Example LEGO® MINDSTORMS® EV3 Robot Arm Program
------------------------------------------------
-
-This program requires LEGO® EV3 MicroPython v2.0.
-Download: https://education.lego.com/en-us/support/mindstorms-ev3/python-for-ev3
-
 Building instructions can be found at:
 https://education.lego.com/en-us/support/mindstorms-ev3/building-instructions#building-core
 """
 
+import math  # används i color_distance
+from pybricks.ev3devices import ColorSensor, Motor, TouchSensor
 from pybricks.hubs import EV3Brick
-from pybricks.ev3devices import Motor, TouchSensor, ColorSensor
-from pybricks.parameters import Port, Stop, Direction, Color, Button
+from pybricks.parameters import Button, Direction, Port, Stop
 from pybricks.tools import wait
-import math # används i color_distance
 
 # Define the destinations for picking up and moving the packages.
 #POSITIONS = [0, 45, 90, 145, 190]
 # POSITIONS = []
-POSITIONS = [(-13, -26), ('red', (50, -21)), ('yellow', (50, -21)), ('blue', (93, -21)), ('green', (133, -21))]
+POSITIONS = [(-13, -26), ('red', (50, -21)), ('yellow', (50, -21)),
+             ('blue', (93, -21)), ('green', (133, -21))]
 
 run = True
 
 # COLORS = [Color.GREEN, Color.BLUE, Color.RED, Color.YELLOW]
 # COLORS = []
-COLORS = [('red', [(45, 6, 23), (10, 1, 3)]), ('yellow', [(68, 49, 30), (12, 9, 1)]), ('blue', [(5, 14, 74), (0, 2, 13)]), ('green', [(8, 35, 37), (2, 10, 8)])]
+COLORS = [('red', [(45, 6, 23), (10, 1, 3)]), ('yellow', [(68, 49, 30), (12, 9, 1)]),
+          ('blue', [(5, 14, 74), (0, 2, 13)]), ('green', [(8, 35, 37), (2, 10, 8)])]
 
 TIME = 5000
 
@@ -101,7 +97,8 @@ def initialize_movement():
 def initialize_colors():
     color_complete= []
     color_rgb = []
-    available_colors = [["red",Button.LEFT],["green", Button.RIGHT],["blue", Button.UP],["yellow", Button.DOWN]] # ändra på vad knapparna ska heta när de printars
+    available_colors = [["red",Button.LEFT],["green", Button.RIGHT],["blue", Button.UP],
+                        ["yellow", Button.DOWN]] # ändra på vad knapparna ska heta när de printars
     available_colors_buttons = [Button.LEFT, Button.RIGHT, Button.UP, Button.DOWN]
 
     while len(COLORS) < 4:
@@ -109,7 +106,7 @@ def initialize_colors():
 
         ev3.screen.print("Select a color")
         for i in available_colors:
-                ev3.screen.print(i[0],i[1])
+            ev3.screen.print(i[0],i[1])
 
 
         while not any(ev3.buttons.pressed()):
