@@ -10,6 +10,7 @@ from pybricks.ev3devices import ColorSensor, Motor, TouchSensor
 from pybricks.hubs import EV3Brick
 from pybricks.parameters import Button, Direction, Port, Stop
 from pybricks.tools import wait
+import threading
 
 # Define the destinations for picking up and moving the packages.
 #POSITIONS = [0, 45, 90, 145, 190]
@@ -323,6 +324,62 @@ def sorting():
                 gripper_motor.run_target(200,-80)
                 wait(TIME)
 
+# def schedule():
+#     global TIME
+#     time = TIME
+#     ev3.screen.print("The schedule is\n", TIME/1000, "seconds\nPress up or down\nto change\nOK with Center")
+#     while Button.CENTER not in ev3.buttons.pressed():
+#         while Button.UP in ev3.buttons.pressed():
+#             TIME = TIME + 500
+#             wait(500)
+#             ev3.screen.clear()
+#             ev3.screen.print("Schedule is now\n", TIME/1000, "seconds")
+#         while Button.DOWN in ev3.buttons.pressed():
+#             TIME = TIME - 500
+#             wait(500)
+#             ev3.screen.clear()
+#             ev3.screen.print("Schedule is now\n", TIME/1000, "seconds")
+#     ev3.screen.clear()
+#     TIME = time
+#     return
+
+def set_timer():
+    ev3.screen.print("Please see menu\n on computer")
+    print("Set timer")
+    timer = int(input("Enter time in seconds: "))
+    print("Timer set for", timer, "seconds.")
+    ev3.screen.clear()
+    threading.Timer(timer, stop_initiazion).start()
+    # threading.Timer(timer, main()).start()
+    pass
+
+def stop_initiazion():
+    ev3.screen.print("Time is up!")
+    ev3.screen.clear()
+    ev3.screen.print("Restarting\ninitialization...")
+    main()
+    return # nästals förevigt?
+
+# def menu():
+#     ev3.screen.print("Please see menu\n on computer")
+#     while True:
+#         print("MENU")
+#         print("1. Check Locations")
+#         print("2. Set Location")
+#         print("3. Exit")
+
+#         choice = input("Enter your choice: ")
+
+#         if choice == "1":
+#             check_locations()
+#         elif choice == "2":
+#             set_location()
+#         elif choice == "3":
+#             break
+#         else:
+#             print("Invalid choice. Please try again.")
+
+
 def menu():
     ev3.screen.print("MENU\nUp: Check Locations\nLeft: Location set\nRight: Schedule\nDown: Return")
     wait(1000)
@@ -360,16 +417,25 @@ def menu():
         if Button.DOWN in ev3.buttons.pressed():
             return
 
+
+
 def main():
     initialize_movement()
     set_pickup()
     # initialize_colors()
     # set_location()
-    # base_motor,elbow_motor=initialize_movment()
-    # initialize_colors((base_motor,elbow_motor))
+    # schedule()
     menu()
     # wait(1500)
     sorting()
+
+# def main():
+#     initialize_movement()
+#     set_pickup()
+#     # initialize_colors()
+#     # set_location()
+#     # schedule()
+
 
 if __name__ == "__main__":
     main()

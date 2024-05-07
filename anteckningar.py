@@ -3,6 +3,7 @@ from pybricks.ev3devices import Motor, TouchSensor, ColorSensor
 from pybricks.parameters import Port, Stop, Direction, Color, Button
 from pybricks.tools import wait
 import math
+import threading
 
 '''kladd för color_sense.rgb()'''
 
@@ -50,7 +51,7 @@ import math
 #     # Extrahera RGB-komponenterna för varje färg
 #     r0, g0, b0 = color1
 #     r1, g1, b1 = color2
-    
+
 #     # Beräkna avståndet mellan färgerna
 #     distance = math.sqrt((r1 - r0) ** 2 + (g1 - g0) ** 2 + (b1 - b0) ** 2)
 
@@ -68,5 +69,5 @@ import math
 # new_list = [i for i in available_colors.pop(i)]
 # print(new_list)
 
-list = [('red', [(45, 6, 23), (10, 1, 3)]), ('yellow', [(68, 49, 30), (12, 9, 1)]), ('blue', [(5, 14, 74), (0, 2, 13)]), ('green', [(8, 35, 37), (2, 10, 8)])]
+# list = [('red', [(45, 6, 23), (10, 1, 3)]), ('yellow', [(68, 49, 30), (12, 9, 1)]), ('blue', [(5, 14, 74), (0, 2, 13)]), ('green', [(8, 35, 37), (2, 10, 8)])]
 
