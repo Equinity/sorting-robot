@@ -1,3 +1,9 @@
+from pybricks.hubs import EV3Brick
+from pybricks.ev3devices import Motor, TouchSensor, ColorSensor
+from pybricks.parameters import Port, Stop, Direction, Color, Button
+from pybricks.tools import wait
+import math
+
 '''kladd för color_sense.rgb()'''
 
 # def rgbp_to_hex(rgbp):
@@ -56,3 +62,8 @@
 
 # distance = color_distance(color1, color2)
 # print("Avståndet mellan färgerna är:", distance)
+
+available_colors = [["red",Button.LEFT],["green", Button.RIGHT],["blue", Button.UP],["yellow", Button.DOWN]] # ändra på vad knapparna ska heta när de printars
+
+new_list = [i for i in available_colors.pop(i)]
+print(new_list)
