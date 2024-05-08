@@ -22,8 +22,7 @@ run = True
 
 # COLORS = [Color.GREEN, Color.BLUE, Color.RED, Color.YELLOW]
 # COLORS = []
-COLORS = [('red', [(45, 6, 23), (10, 1, 3)]), ('yellow', [(68, 49, 30), (12, 9, 1)]),
-          ('blue', [(5, 14, 74), (0, 2, 13)]), ('green', [(8, 35, 37), (2, 10, 8)])]
+COLORS = [('yellow', [(32, 21, 11), (16, 9, 6)]), ('blue', [(0, 0, 7), (1, 3, 21)]), ('red', [(28, 4, 13), (15, 2, 0)]), ('green', [(2, 8, 6), (2, 8, 7)])]
 
 TIME = 5000
 
@@ -421,8 +420,8 @@ def menu():
 
 def main():
     initialize_movement()
-    set_pickup()
-    # initialize_colors()
+    # set_pickup()
+    initialize_colors()
     # set_location()
     # schedule()
     menu()
