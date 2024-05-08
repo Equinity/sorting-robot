@@ -4,6 +4,7 @@ from pybricks.parameters import Port, Stop, Direction, Color, Button
 from pybricks.tools import wait
 import math
 import threading
+from threading import Thread
 
 '''kladd för color_sense.rgb()'''
 
@@ -70,4 +71,8 @@ import threading
 # print(new_list)
 
 # list = [('red', [(45, 6, 23), (10, 1, 3)]), ('yellow', [(68, 49, 30), (12, 9, 1)]), ('blue', [(5, 14, 74), (0, 2, 13)]), ('green', [(8, 35, 37), (2, 10, 8)])]
+timer = threading.Timer(2.0, print, args=["Hello, World!"])
+timer.start()
 
+while timer.is_alive():
+    print("Printing...")
