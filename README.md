@@ -40,22 +40,22 @@ You should also describe how to operate your program. Does it need manual input 
 
 - [x] US01B: As a customer, I want the robot to pick up items from a designated position. 
 - [x] US02B: As a customer, I want the robot to drop off items at a designated position.
-- [] US03: As a customer, I want the robot to be able to determine if an item is present at a given location.
-- [] US04B: As a customer, I want the robot to tell me the colour of an item at a designated position.
+- [o] US03: As a customer, I want the robot to be able to determine if an item is present at a given location.
+- [o] US04B: As a customer, I want the robot to tell me the colour of an item at a designated position.
 - [x] US05: As a customer, I want the robot to drop items off at different locations based on the colour of the item.
 - [x] US06: As a customer, I want the robot to be able to pick up items from elevated positions.
 - [x] US08: As a customer, I want to be able to calibrate maximum of three different colours and assign them to specific drop-off zones.
-- [] US09: As a customer, I want the robot to check the pickup location periodically to see if a new item as arrived.
-- [] US10: As a customer, I want the robot to sort items at a specific time.   --
-- [] US11: As a customer, other. I want two robots (from two teams) communicate and work together on items sorting without colliding with each
+- [o] US09: As a customer, I want the robot to check the pickup location periodically to see if a new item as arrived.
+- [o] US10: As a customer, I want the robot to sort items at a specific time.   --
+- [o] US11: As a customer, other. I want two robots (from two teams) communicate and work together on items sorting without colliding with each
 - [x] US12: As a customer, I want to be able to manually set the locations and heights of one pick-up zone and two drop-off zones. (Implemented either by manually dragging the arm to a position or using buttons) 
-- [] US13: As a customer, I want to easily reprogram the pickup and drop of zone of the robot.
-- [] US14: As a customer, I want to easily change the schedule of the robot pick up task.
-- [] US15: As a customer, I want to have an emergency stop button, that immediately terminates the operation of the robot safely.
-- [] US16: As a customer, I want the robot to be able to pick an item up and put it in the designated drop-off location within 5 seconds.
-- [] US17: I want the robot to pick up items form a rolling belt and put them in the designated positions based on color and shape.
-- [] US18: I want to have a pause button that pauses the robot´s operation when the button is pushed and then resumes the program from the same point when I push the button again.
-- [] US19: I want a very nice dashboard to configure the robot program and start some tasks on demand.
+- [o] US13: As a customer, I want to easily reprogram the pickup and drop of zone of the robot.
+- [o] US14: As a customer, I want to easily change the schedule of the robot pick up task.
+- [o] US15: As a customer, I want to have an emergency stop button, that immediately terminates the operation of the robot safely.
+- [o] US16: As a customer, I want the robot to be able to pick an item up and put it in the designated drop-off location within 5 seconds.
+- [o] US17: I want the robot to pick up items form a rolling belt and put them in the designated positions based on color and shape.
+- [o] US18: I want to have a pause button that pauses the robot´s operation when the button is pushed and then resumes the program from the same point when I push the button again.
+- [o] US19: I want a very nice dashboard to configure the robot program and start some tasks on demand.
 
 
 
