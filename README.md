@@ -1,14 +1,5 @@
 # PA1473 - Software Development: Agile Project
 
-## Template information
-This template should help your team write a good readme-file for your project. (The file is called README.md in your project directory.)
-You are of course free to add more sections to your readme if you want to.
-
-Readme-files on GitHub are formatted using Markdown. You can find information about how to format using Markdown here: https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
-
-Your readme-file should include the following sections:
-
-
 # Introduction
 
 This is a repository for a LEGO Mindstorms EV3 robot with code for automatically sorting different coloured packages. 
