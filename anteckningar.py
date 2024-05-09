@@ -76,3 +76,95 @@ timer.start()
 
 while timer.is_alive():
     print("Printing...")
+
+time.time()
+
+def emergency_check():
+    global stop_program
+    while True:
+        if sensor_ctrl == False:
+            if not button_ctrl:
+                if Button.UP in ev3.buttons.pressed():
+                    ev3.speaker.beep()  # Optional: Makes a beep sound when the emergency stop is triggered
+                    gripper.stop()
+                    elbow.stop()
+                    base.stop()
+                    print("Emergency stop triggered!")
+                    stop_program = True
+                    break  # Exit the thread
+                elif Button.LEFT in ev3.buttons.pressed():
+                    pause()
+
+def pause():
+    global continue_main_loop, button_ctrl
+    ev3.speaker.beep()
+    ev3.screen.clear()
+    showinfo('PAUSED')
+    store_state()
+    print("Paused!")
+    continue_main_loop = False
+    while not continue_main_loop:
+        client.check_msg()
+        gripper.hold()
+        elbow.hold()
+        base.hold()
+        if sensor_ctrl == False:
+            if not button_ctrl:
+                if Button.RIGHT in ev3.buttons.pressed():
+                    resume()
+
+def resume():
+    global continue_main_loop
+    print("Resuming...")
+    ev3.screen.clear()
+    restore_state()
+    continue_main_loop = True
+
+threading.Thread(target=emergency_check).start()
+
+current_time = time.time() + 2*3600
+current_time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(current_time))
+
+def main_loop():
+    # Main loop
+    while True:
+        if stop_program:
+            sys.exit()
+        else:
+            while continue_main_loop:
+                current_time = time.time() + 2*3600
+                current_time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(current_time))
+                print("Current time: " + current_time_str)
+
+                pickup()
+                if stop_program or not continue_main_loop: break
+
+                # Read RGB values and determine item color
+                itemcolor = ""
+                red, green, blue = read_rgb()
+                itemcolor = rgb_to_color(red, green, blue)
+                client.publish(topic, itemcolor)
+                showinfo(itemcolor)
+
+                if stop_program or not continue_main_loop: break
+
+                # Sort the item based on its color
+                sort_item(itemcolor, settings_dict)
+
+                if stop_program or not continue_main_loop: break
+
+                # Drop off the sorted item
+                if itemcolor.lower() is not 'other':
+                    dropoff()
+
+                if stop_program or not continue_main_loop: break
+
+                start_on_pickup_zone(settings_dict)
+
+                if stop_program or not continue_main_loop: break
+
+                # Clear the EV3 screen and wait before continuing
+                ev3.screen.clear()
+                time.sleep(0.1)
+
+                if stop_program or not continue_main_loop: break
