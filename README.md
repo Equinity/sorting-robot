@@ -60,7 +60,7 @@ If a new package has arrived, the robot will sense the color and move it to the 
 
 - [x] [US01B: As a customer, I want the robot to pick up items from a designated position.](https://github.com/users/Equinity/projects/1?pane=issue&itemId=60045277)
 - [x] [US02B: As a customer, I want the robot to drop off items at a designated position.](https://github.com/Equinity/sorting-robot/issues/38)
-- [x] #39
+- [x] [#39](https://github.com/users/Equinity/projects/1/views/1?pane=issue&itemId=60045869)
 - [x] US04B: As a customer, I want the robot to tell me the colour of an item at a designated position.
 - [x] US05: As a customer, I want the robot to drop items off at different locations based on the colour of the item.
 - [x] US06: As a customer, I want the robot to be able to pick up items from elevated positions.
