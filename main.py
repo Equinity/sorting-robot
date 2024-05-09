@@ -320,8 +320,7 @@ def set_timer():
     if choice == 1:
         print("Current time is " + time.strftime("%H:%M:%S", time.localtime()))
         timer = time_seconds + (int(input("Enter time in seconds: ")))
-        print("Timer set for ", timer, " seconds.")
-        # threading.Timer(timer, stop_initialization).start()
+        print("Timer set for ", time.strftime("%H:%M:%S", time.localtime(timer)), " seconds.")
         ev3.screen.clear()
 
     elif choice == 2:
