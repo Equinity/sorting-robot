@@ -41,6 +41,7 @@ When the program is first run, the robot needs to be configured, by following th
 Begin with setting the pick-up location by entering 1 in the menu and calibrating the pick-up location with the buttons on the robot, confirming with the center button.
 
 Then, you calibrate the colors by entering 2 in the menu and following the on-screen instructions.
+
 **Please note that both sizes of the packages are required for this process.**
 
 After the colors have been calibrated, you specify the locations for drop-off for each color. This is also done by using the buttons on the robot and following the on-screen instructions.
