@@ -1,8 +1,8 @@
 #!/usr/bin/env pybricks-micropython
 
 """
-Building instructions can be found at:
-https://education.lego.com/en-us/support/mindstorms-ev3/building-instructions#building-core
+This program is for the EV3 robot to sort packages by color.
+Follow the setup process in menu() 1 - 4 before starting.
 """
 
 import math
@@ -15,21 +15,18 @@ from pybricks.parameters import Button, Color, Direction, Port, Stop
 from pybricks.tools import wait
 
 # Define the destinations for picking up and moving the packages.
-#POSITIONS = [0, 45, 90, 145, 190]
 POSITIONS = []
 # POSITIONS = [(0, -26), ('Red', (50, -21)), ('Yellow', (50, -21)),
 #              ('Blue', (93, -21)), ('Green', (133, -21))]
 
 SPEED = 1000
+TIME = 4000
 
 run = True
 
-# COLORS = [Color.GREEN, Color.BLUE, Color.RED, Color.YELLOW]
 COLORS = []
-# COLORS = [('Yellow', [(32, 21, 11), (16, 9, 6)]), ('Blue', [(0, 0, 7), (1, 3, 21)]), 
+# COLORS = [('Yellow', [(32, 21, 11), (16, 9, 6)]), ('Blue', [(0, 0, 7), (1, 3, 21)]),
 #           ('Red', [(28, 4, 13), (15, 2, 0)]), ('Green', [(2, 8, 6), (2, 8, 7)])]
-
-TIME = 4000
 
 # Initialize the EV3 Brick
 ev3 = EV3Brick()
@@ -37,47 +34,33 @@ ev3 = EV3Brick()
 # Configure the gripper motor on Port A with default settings.
 gripper_motor = Motor(Port.A)
 
-# Configure the elbow motor. It has an 8-teeth and a 40-teeth gear
-# connected to it. We would like positive speed values to make the
-# arm go upward. This corresponds to counterclockwise rotation
-# of the motor.
+# Configure the elbow motor.
 elbow_motor = Motor(Port.B, Direction.COUNTERCLOCKWISE, [8, 40])
 
-# Configure the motor that rotates the base. It has a 12-teeth and a
-# 36-teeth gear connected to it. We would like positive speed values
-# to make the arm go away from the Touch Sensor. This corresponds
-# to counterclockwise rotation of the motor.
+# Configure the motor that rotates the base.
 base_motor = Motor(Port.C, Direction.COUNTERCLOCKWISE, [12, 36])
 
-# Limit the elbow and base accelerations. This results in
-# very smooth motion. Like an industrial robot.
-elbow_motor.control.limits(SPEED, acceleration=120)
-base_motor.control.limits(SPEED, acceleration=120)
+# Limit the elbow and base accelerations.
+elbow_motor.control.limits(SPEED, acceleration=200)
+base_motor.control.limits(SPEED, acceleration=200)
 
-# Set up the Touch Sensor. It acts as an end-switch in the base
-# of the robot arm. It defines the starting point of the base.
+# Set up the Touch Sensor.
 base_switch = TouchSensor(Port.S1)
 
-# Set up the Color Sensor. This sensor detects when the elbow
-# is in the starting position. This is when the sensor sees the
-# white beam up close.
+# Set up the Color Sensor.
 color_sensor = ColorSensor(Port.S2)
 
 # Calibrate all the motors
 def initialize_movement():
-    # Initialize the gripper. First rotate the motor until it stalls.
-    # Stalling means that it cannot move any further. This position
-    # corresponds to the closed position. Then rotate the motor
-    # by 90 degrees such that the gripper is open.
+    """
+    This function initializes the motors to their starting positions.
+    """
+    # Initialize the gripper.
     gripper_motor.run_until_stalled(200, then=Stop.COAST, duty_limit=50)
     gripper_motor.reset_angle(0)
     gripper_motor.run_target(200, -90)
 
-    # Initialize the elbow. First make it go down for one second.
-    # Then make it go upwards slowly (15 degrees per second) until
-    # the Color Sensor detects the white beam. Then reset the motor
-    # angle to make this the zero point. Finally, hold the motor
-    # in place so it does not move.
+    # Initialize the elbow.
     elbow_motor.run_time(-30, 1000)
     elbow_motor.run(15)
     while color_sensor.reflection() > 0:
@@ -85,13 +68,11 @@ def initialize_movement():
     elbow_motor.reset_angle(0)
     elbow_motor.hold()
 
-    # Initialize the base. First rotate it until the Touch Sensor
-    # in the base is pressed. Reset the motor angle to make this
-    # the zero point. Then hold the motor in place so it does not move.
+    # Initialize the base.
     base_motor.run(-60)
     while not base_switch.pressed():
         wait(10)
-    base_motor.run_angle(10,8) # Micro adjustment (needs tweaking for every single robot)
+    base_motor.run_angle(10,8) # Needed to recenter the base
     base_motor.hold()
     base_motor.reset_angle(0)
 
@@ -100,6 +81,9 @@ def initialize_movement():
     return
 
 def initialize_colors():
+    """
+    This function initializes the colors that the robot will sort.
+    """
     color_complete= []
     color_rgb = []
     available_colors = [["Red",Button.LEFT],["Green", Button.RIGHT],["Blue", Button.UP],
@@ -108,11 +92,9 @@ def initialize_colors():
 
     while len(COLORS) < 4:
         button_pressed = []
-
         ev3.screen.print("Select a color")
         for i in available_colors:
             ev3.screen.print(i[0],i[1])
-
 
         while not any(ev3.buttons.pressed()):
             wait(1)
@@ -135,7 +117,10 @@ def initialize_colors():
                 available_colors_buttons.remove(i[1])
         button_pressed = []
 
-        ev3.screen.print("Put a 4x2 brick of\nthe selected color\nin the pick-up location\nPress the middle\nbutton when done")
+        ev3.screen.print("Put a 4x2 brick \nof the selected color \nin the pick-up location")
+        ev3.screen.print("Press the middle button when done")
+        print("Put a 4x2 brick of the selected color in the pick-up location")
+        print("Press the middle button when done")
 
         while Button.CENTER not in ev3.buttons.pressed():
             wait(1)
@@ -144,7 +129,10 @@ def initialize_colors():
         robot_pick(POSITIONS[0])
         color_rgb.append(color_sensor.rgb())
         robot_release(POSITIONS[0])
-        ev3.screen.print("Put a 2x2 brick of the selected color in the pick-up location \nPress the middle when done")
+        ev3.screen.print("Put a 2x2 brick \nof the selected color \nin the pick-up location")
+        ev3.screen.print("Press the middle when done")
+        print("Put a 2x2 brick of the selected color in the pick-up location")
+        print("Press the middle button when done")
 
         while Button.CENTER not in ev3.buttons.pressed():
             wait(1)
@@ -159,13 +147,13 @@ def initialize_colors():
         color_rgb = []
 
     print(COLORS) # check
-
     return
 
 def robot_pick(position):
-    # This function it lowers the elbow, closes the
-    # gripper, and raises the elbow to pick up the package.
-
+    """
+    This function it lowers the elbow, closes the
+    gripper, and raises the elbow to pick up the package.
+    """
     base_motor.run_target(SPEED, position[0])
     # Lower the arm.
     elbow_motor.run_target(SPEED, position[1])
@@ -175,11 +163,11 @@ def robot_pick(position):
     elbow_motor.run_target(SPEED, 5)
 
 def robot_release(position):
-    # This function lowers the elbow, opens the gripper to
-    # release the package. Then it raises its arm again.
-
+    """ 
+    This function lowers the elbow, opens the gripper to
+    release the package. Then it raises its arm again.
+    """
     base_motor.run_target(SPEED, position[0])
-    # Lower the arm to put the package on the ground.
     elbow_motor.run_target(SPEED, position[1])
     # Open the gripper to release the package.
     gripper_motor.run_target(200, -90)
@@ -187,6 +175,9 @@ def robot_release(position):
     elbow_motor.run_target(SPEED, 20)
 
 def color_distance(color1rgb, color2rgb):
+    """
+    This function calculates the distance between two colors.
+    """
     color1rgbp = []
     color2rgbp = []
 
@@ -198,18 +189,19 @@ def color_distance(color1rgb, color2rgb):
         i = i/100*255
         color2rgbp.append(i)
 
-    # Extrahera RGB-komponenterna för varje färg
+    # Extract the RGB values of the two colors.
     r0, g0, b0 = color1rgbp
     r1, g1, b1 = color2rgbp
 
-    # Beräkna avståndet mellan färgerna
+    # Calculate the Euclidean distance between the two colors.
     distance = math.sqrt((r1 - r0) ** 2 + (g1 - g0) ** 2 + (b1 - b0) ** 2)
-
     # print(distance) # check
-
     return distance
 
 def closest_color(color):
+    """
+    This function finds the closest color to the sensed color.
+    """
     closest_color_name = []
     closest_color_distance = 999
 
@@ -219,16 +211,19 @@ def closest_color(color):
                 closest_color_distance = color_distance(color, j)
                 closest_color_name = i[0]
 
-    print(closest_color_name) # check
-
+    print(closest_color_name) # Prints the color
     return closest_color_name
 
 def color_sense():
-    color = closest_color(color_sensor.rgb())
-    
-    return color
+    """
+    This function senses the color of the package.
+    """
+    return closest_color(color_sensor.rgb())
 
 def set_location():
+    """
+    This function sets the drop-off locations for the robot.
+    """
     global POSITIONS
     POSITIONS = POSITIONS[:1]
     print("Please see robot")
@@ -258,6 +253,9 @@ def set_location():
     return
 
 def set_pickup():
+    """
+    This function sets the pick-up location for the robot.
+    """
     print("Please see robot")
     ev3.screen.print("Please calibrate the\npick-up location and\nconfirm with center.")
     while Button.CENTER not in ev3.buttons.pressed():
@@ -284,9 +282,12 @@ def set_pickup():
     return
 
 def check_location(position):
+    """
+    This function checks if there is a package at the specified location.
+    """
     robot_pick(POSITIONS[position][1])
     if gripper_motor.angle() > -10:
-        print("No package present")
+        print("\nNo package present")
         gripper_motor.run_target(200,-80)
     else:
         color_sense()
@@ -294,14 +295,18 @@ def check_location(position):
     return
 
 def sorting():
+    """
+    This function sorts the packages by color.
+    """
     global run
     ev3.screen.clear()
-    ev3.screen.print("\nCenter to emergency stop\nRight to pause")
+    ev3.screen.print("\nEmergency: Center\nPause: Right")
     threading.Thread(target=emergency).start()
     threading.Thread(target=pause).start()
-    if run == False:
+    if not run:
         return
-    while run == True:
+    while run:
+        ev3.light.on(Color.GREEN)
         robot_pick(POSITIONS[0])
         if gripper_motor.angle() < -10: # <>
             color = color_sense()
@@ -309,11 +314,14 @@ def sorting():
                 if color == color_name:
                     robot_release(position)
         else:
-            print("No package present")
+            print("\nNo package present")
             gripper_motor.run_target(200,-80)
             wait(TIME)
 
 def set_timer():
+    """
+    This function sets the timer/schedule for the robot to run.
+    """
     global run
     global timer
     ev3.screen.clear()
@@ -321,7 +329,7 @@ def set_timer():
     print("\n------ Set timer ------")
     print("1. Set time to run")
     print("2. Set schedule to run")
-    choice = int(input("Enter your choice: "))
+    choice = int(input("\nEnter your choice: "))
     time_seconds = round(time.time())
     if choice == 1:
         print("Current time is " + time.strftime("%H:%M:%S", time.localtime()))
@@ -331,19 +339,28 @@ def set_timer():
 
     elif choice == 2:
         print("Current time is " + time.strftime("%H:%M:%S", time.localtime()))
-        hours = int(input("Enter hours you want the robot to run\n"))
-        minutes = int(input("Enter minutes you want the robot to run\n"))
-        seconds = int(input("Enter seconds you want the robot to run\n"))
+        hours = int(input("Enter to-hour you want the robot to run\n"))
+        minutes = int(input("Enter to-minute you want the robot to run\n"))
+        seconds = int(input("Enter to-second you want the robot to run\n"))
 
-        current_day_seconds = int(time.strftime("%H", time.localtime()))*3600 + int(time.strftime("%M", time.localtime()))*60 + int(time.strftime("%S", time.localtime()))
+        # current_day_seconds = int(time.strftime("%H", time.localtime()))*3600 +
+        # int(time.strftime("%M", time.localtime()))*60 + int(time.strftime("%S", time.localtime()))
+
+        current_day_seconds = (
+            int(time.strftime("%H", time.localtime())) * 3600
+            + int(time.strftime("%M", time.localtime())) * 60
+            + int(time.strftime("%S", time.localtime()))
+        )
         target_time_seconds = hours*3600 + minutes*60 + seconds
         timer = time_seconds +  (target_time_seconds - current_day_seconds)
         print("Timer set for ", hours, " hours, ", minutes, " minutes and ", seconds, " seconds.")
-
     threading.Thread(target=check_timer).start()
     return
 
 def check_timer():
+    """
+    This function checks the timer/schedule set by the user.
+    """
     global run
     global timer
     # print("CHECK TIMER ", timer)
@@ -361,32 +378,34 @@ def check_timer():
             break
 
 def menu():
+    """
+    This function handles the menu for the user to interact with the robot.
+    """
     global run
     ev3.screen.clear()
     ev3.screen.print("Please see menu\n on computer")
     while True:
         print("\n------ MENU ------")
-        print("1. Check Location")
-        print("2. Set/change drop-off Location")
-        print("3. Set/change pick-up Location")
+        print("1. Set/change pick-up Location")
+        print("2. Calibrate colors")
+        print("3. Set/change drop-off Locations")
         print("4. Set runtime")
-        print("5. Calibrate colors")
+        print("5. Check Location")
         print("9. Run program")
 
         choice = input("Enter your choice: ")
-
         if choice == "1":
-            print("Which position do you want to check?\n")
-            position = int(input("Enter position: "))
-            check_location(position)
-        elif choice == "2":
-            set_location()
-        elif choice == "3":
             set_pickup()
+        elif choice == "2":
+            initialize_colors()
+        elif choice == "3":
+            set_location()
         elif choice == "4":
             set_timer()
         elif choice == "5":
-            initialize_colors()
+            print("Which position do you want to check?\n")
+            position = int(input("Enter position: (1-4)\n"))
+            check_location(position)
         elif choice == "9":
             run = True
             break
@@ -394,6 +413,9 @@ def menu():
             print("Invalid choice. Please try again.")
 
 def emergency():
+    """
+    This function handles the emergency stop for the robot.
+    """
     global run
     global program_running
     while True:
@@ -406,6 +428,7 @@ def emergency():
             print("Emergency stop")
             ev3.screen.clear()
             ev3.screen.print("Emergency stop")
+            ev3.light.on(Color.RED)
             selection = int(input("1. Reset\n2. Stop program\n"))
             if selection == 1:
                 run = True
@@ -417,6 +440,9 @@ def emergency():
                 print("Invalid choice. Please try again.")
 
 def pause():
+    """
+    This function handles the pause for the robot.
+    """
     global run
     global not_paused
     while True:
@@ -429,6 +455,7 @@ def pause():
             print("Paused")
             ev3.screen.clear()
             ev3.screen.print("Paused")
+            ev3.light.on(Color.YELLOW)
             selection = int(input("1. Continue\n2. Stop program\n"))
             if selection == 1:
                 run = True
@@ -441,6 +468,9 @@ def pause():
                 print("Invalid choice. Please try again.")
 
 def main():
+    """
+    This is the main function that runs the program.
+    """
     global program_running
     global run
     global not_paused
@@ -450,14 +480,14 @@ def main():
     while True:
         # program_running = True
         run = True
-        print("MAIN RUNNING")
+        # print("MAIN RUNNING")
         while program_running:
-            print("PROGRAM RUNNING")
+            # print("PROGRAM RUNNING")
             initialize_movement()
             menu()
             while not_paused:
                 if not_paused and run:
-                    print("SORTING RUNNING")
+                    # print("SORTING RUNNING")
                     sorting()
                 else:
                     wait(1)
