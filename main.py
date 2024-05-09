@@ -5,27 +5,26 @@ Building instructions can be found at:
 https://education.lego.com/en-us/support/mindstorms-ev3/building-instructions#building-core
 """
 
-import math  # används i color_distance
+import math
 from pybricks.ev3devices import ColorSensor, Motor, TouchSensor
 from pybricks.hubs import EV3Brick
-from pybricks.parameters import Button, Direction, Port, Stop
+from pybricks.parameters import Button, Direction, Port, Stop, Color
 from pybricks.tools import wait
 import threading
-from threading import Thread
+import sys
+import time
 
 # Define the destinations for picking up and moving the packages.
 #POSITIONS = [0, 45, 90, 145, 190]
 # POSITIONS = []
-POSITIONS = [(-13, -26), ('red', (50, -21)), ('yellow', (50, -21)),
-             ('blue', (93, -21)), ('green', (133, -21))]
-
-run = True
+POSITIONS = [(0, -26), ('Red', (50, -21)), ('Yellow', (50, -21)),
+             ('Blue', (93, -21)), ('Green', (133, -21))]
 
 SPEED = 200;
 
 # COLORS = [Color.GREEN, Color.BLUE, Color.RED, Color.YELLOW]
 # COLORS = []
-COLORS = [('yellow', [(32, 21, 11), (16, 9, 6)]), ('blue', [(0, 0, 7), (1, 3, 21)]), ('red', [(28, 4, 13), (15, 2, 0)]), ('green', [(2, 8, 6), (2, 8, 7)])]
+COLORS = [('Yellow', [(32, 21, 11), (16, 9, 6)]), ('Blue', [(0, 0, 7), (1, 3, 21)]), ('Red', [(28, 4, 13), (15, 2, 0)]), ('Green', [(2, 8, 6), (2, 8, 7)])]
 
 TIME = 4000
 
@@ -100,8 +99,8 @@ def initialize_movement():
 def initialize_colors():
     color_complete= []
     color_rgb = []
-    available_colors = [["red",Button.LEFT],["green", Button.RIGHT],["blue", Button.UP],
-                        ["yellow", Button.DOWN]] # ändra på vad knapparna ska heta när de printars
+    available_colors = [["Red",Button.LEFT],["Green", Button.RIGHT],["Blue", Button.UP],
+                        ["Yellow", Button.DOWN]] # ändra på vad knapparna ska heta när de printars
     available_colors_buttons = [Button.LEFT, Button.RIGHT, Button.UP, Button.DOWN]
 
     while len(COLORS) < 4:
@@ -132,7 +131,6 @@ def initialize_colors():
                 available_colors.remove(i)
                 available_colors_buttons.remove(i[1])
         button_pressed = []
-
 
         ev3.screen.print("Put a 4x2 brick of\nthe selected color\nin the pick-up location\nPress the middle\nbutton when done")
 
@@ -223,11 +221,13 @@ def closest_color(color):
     return closest_color_name
 
 def color_sense():
+    # ev3.light.on(Color.upper(color))
     return closest_color(color_sensor.rgb())
 
 def set_location():
     global POSITIONS
     POSITIONS = POSITIONS[:1]
+    print("Please see robot")
     ev3.screen.print("Please calibrate the\ndrop-off locations and\nconfirm with center.")
     while len(POSITIONS) < 5:
         for i in COLORS:
@@ -254,6 +254,7 @@ def set_location():
     return
 
 def set_pickup():
+    print("Please see robot")
     ev3.screen.print("Please calibrate the\npick-up location and\nconfirm with center.")
     while Button.CENTER not in ev3.buttons.pressed():
         while Button.LEFT in ev3.buttons.pressed():
@@ -278,97 +279,165 @@ def set_pickup():
     elbow_motor.run_target(60, 5)
     return
 
-def check_location(color):
-
-    while gripper_motor.angle() > -10:
-        ev3.speaker.say("No package")
+def check_location(position):
+    robot_pick(POSITIONS[position][1])
+    if gripper_motor.angle() > -10:
+        print("No package present")
         gripper_motor.run_target(200,-80)
+    else:
+        color_sense()
+        robot_release(POSITIONS[position][1])
     return
 
 def sorting():
-    ev3.screen.print("HOLD CENTER\nBUTTON FOR\nSAFE STOP")
-    run = True
-    while True:
-        # while Button.CENTER not in ev3.buttons.pressed() and run == True:
-        while run == True:
-            robot_pick(POSITIONS[0])
-            if gripper_motor.angle() < -10: # <>
-                color = color_sense()
-                for color_name, position in POSITIONS[1:5]:
-                    if color == color_name:
-                        robot_release(position)
-                    elif Button.CENTER in ev3.buttons.pressed():
-                        run = False
-                        ev3.screen.clear()
-                        ev3.screen.print("SAFE STOP\n\nPress Left to\nenter menu")
-                        wait(1)
-                        if Button.LEFT in ev3.buttons.pressed():
-                            ev3.screen.clear()
-                            menu()
-                            return
-            else:
-                ev3.speaker.say("No package")
-                gripper_motor.run_target(200,-80)
-                wait(TIME)
-
+    global run
+    threading.Thread(target=emergency).start()
+    threading.Thread(target=pause).start()
+    if run == False:
+        return
+    while run == True:
+        robot_pick(POSITIONS[0])
+        if gripper_motor.angle() < -10: # <>
+            color = color_sense()
+            for color_name, position in POSITIONS[1:5]:
+                if color == color_name:
+                    robot_release(position)
+        else:
+            print("No package present")
+            gripper_motor.run_target(200,-80)
+            wait(TIME)
 
 def set_timer():
-    ev3.screen.print("Please see menu\n on computer")
-    print("Set timer")
-    timer = int(input("Enter time in seconds: "))
-    print("Timer set for", timer, "seconds.")
+    global run
+    global timer
     ev3.screen.clear()
-    # Thread(target=).start()
-    threading.Timer(timer, stop_initiazion).start()
-    # threading.Timer(timer, main()).start()
-    pass
+    ev3.screen.print("\n\nPlease see menu\n on computer")
+    print("\n------ Set timer ------")
+    print("1. Set time to run")
+    print("2. Set schedule to run")
+    choice = int(input("Enter your choice: "))
+    time_seconds = round(time.time())
+    if choice == 1:
+        print("Current time is " + time.strftime("%H:%M:%S", time.localtime()))
+        timer = time_seconds + (int(input("Enter time in seconds: ")))
+        print("Timer set for ", timer, " seconds.")
+        # threading.Timer(timer, stop_initialization).start()
+        ev3.screen.clear()
 
-def stop_initiazion():
-    ev3.screen.print("Time is up!")
-    ev3.screen.clear()
-    ev3.screen.print("Restarting\ninitialization...")
-    main()
-    return # nästals förevigt?
+    elif choice == 2:
+        print("Current time is " + time.strftime("%H:%M:%S", time.localtime()))
+        hours = int(input("Enter hours you want the robot to run\n"))
+        minutes = int(input("Enter minutes you want the robot to run\n"))
+        seconds = int(input("Enter seconds you want the robot to run\n"))
+
+        current_day_seconds = int(time.strftime("%H", time.localtime()))*3600 + int(time.strftime("%M", time.localtime()))*60 + int(time.strftime("%S", time.localtime()))
+        target_time_seconds = hours*3600 + minutes*60 + seconds
+        timer = time_seconds +  (target_time_seconds - current_day_seconds)
+        print("Timer set for ", hours, " hours, ", minutes, " minutes and ", seconds, " seconds.")
+
+    threading.Thread(target=check_timer).start()
+    return
+
+def check_timer():
+    global run
+    global timer
+    # print("CHECK TIMER ", timer)
+    while True:
+        time_seconds = round(time.time())
+        # print(time_seconds - timer)
+        while time_seconds == timer:
+            run = False
+            ev3.screen.clear()
+            ev3.screen.print("Time is up!")
+            print("Current time is " + time.strftime("%H:%M:%S", time.localtime()))
+            print("Time is up!")
+            # timer = None
+            wait(1500)
+            break
 
 def menu():
+    global run
+    ev3.screen.clear()
     ev3.screen.print("Please see menu\n on computer")
     while True:
-        print("MENU")
-        print("1. Check Locations")
+        print("\n------ MENU ------")
+        print("1. Check Location")
         print("2. Set/change drop-off Location")
+        print("3. Set/change pick-up Location")
         print("4. Set runtime")
-        print("9. Exit")
-
+        print("5. Calibrate colors")
+        print("9. Run program")
 
         choice = input("Enter your choice: ")
 
         if choice == "1":
-            print("Which colour you want check?")
-            color_to_check = input("Enter color: ")
-            check_location()
+            print("Which position do you want to check?\n")
+            position = int(input("Enter position: "))
+            check_location(position)
         elif choice == "2":
             set_location()
         elif choice == "3":
+            set_pickup()
+        elif choice == "4":
             set_timer()
+        elif choice == "5":
+            initialize_colors()
         elif choice == "9":
+            run = True
             break
         else:
             print("Invalid choice. Please try again.")
 
-def choose_location():
+def emergency():
+    global run
+    global program_running
+    while True:
+        if Button.CENTER in ev3.buttons.pressed():
+            base_motor.hold()
+            elbow_motor.hold()
+            gripper_motor.hold()
+            print("Emergency stop")
+            ev3.screen.clear()
+            ev3.screen.print("Emergency stop")
+            selection = int(input("1. Reset\n2. Stop program\n"))
+            run = False
+            if selection == 1:
+                run = False
+                program_running = False
+                break
+            elif selection == 2:
+                sys.exit()
 
-    pass
+def pause():
+    global run
+    while True:
+        if Button.RIGHT in ev3.buttons.pressed():
+            base_motor.hold()
+            elbow_motor.hold()
+            gripper_motor.hold()
+            print("Paused")
+            ev3.screen.clear()
+            ev3.screen.print("Paused")
+            selection = int(input("1. Continue\n2. Stop program\n"))
+            run = False
+            if selection == 1:
+                run = True
+                break
+            elif selection == 2:
+                sys.exit()
 
 def main():
-    initialize_movement()
-    # set_pickup()
-    initialize_colors()
-    # set_location()
-    # schedule()
-    menu()
-    # set_timer()
-    # wait(1500)
-    sorting()
+    global program_running
+    global run
+    while True:
+        program_running = True
+        run = True
+        while program_running:
+            initialize_movement()
+            menu()
+            sorting()
+            if not program_running:
+                break
 
 if __name__ == "__main__":
     main()
