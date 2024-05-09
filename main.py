@@ -6,25 +6,28 @@ https://education.lego.com/en-us/support/mindstorms-ev3/building-instructions#bu
 """
 
 import math
+import sys
+import threading
+import time
 from pybricks.ev3devices import ColorSensor, Motor, TouchSensor
 from pybricks.hubs import EV3Brick
-from pybricks.parameters import Button, Direction, Port, Stop, Color
+from pybricks.parameters import Button, Color, Direction, Port, Stop
 from pybricks.tools import wait
-import threading
-import sys
-import time
 
 # Define the destinations for picking up and moving the packages.
 #POSITIONS = [0, 45, 90, 145, 190]
-# POSITIONS = []
-POSITIONS = [(0, -26), ('Red', (50, -21)), ('Yellow', (50, -21)),
-             ('Blue', (93, -21)), ('Green', (133, -21))]
+POSITIONS = []
+# POSITIONS = [(0, -26), ('Red', (50, -21)), ('Yellow', (50, -21)),
+#              ('Blue', (93, -21)), ('Green', (133, -21))]
 
-SPEED = 200;
+SPEED = 1000
+
+run = True
 
 # COLORS = [Color.GREEN, Color.BLUE, Color.RED, Color.YELLOW]
-# COLORS = []
-COLORS = [('Yellow', [(32, 21, 11), (16, 9, 6)]), ('Blue', [(0, 0, 7), (1, 3, 21)]), ('Red', [(28, 4, 13), (15, 2, 0)]), ('Green', [(2, 8, 6), (2, 8, 7)])]
+COLORS = []
+# COLORS = [('Yellow', [(32, 21, 11), (16, 9, 6)]), ('Blue', [(0, 0, 7), (1, 3, 21)]), 
+#           ('Red', [(28, 4, 13), (15, 2, 0)]), ('Green', [(2, 8, 6), (2, 8, 7)])]
 
 TIME = 4000
 
@@ -48,8 +51,8 @@ base_motor = Motor(Port.C, Direction.COUNTERCLOCKWISE, [12, 36])
 
 # Limit the elbow and base accelerations. This results in
 # very smooth motion. Like an industrial robot.
-elbow_motor.control.limits(speed=200, acceleration=120)
-base_motor.control.limits(speed=200, acceleration=120)
+elbow_motor.control.limits(SPEED, acceleration=120)
+base_motor.control.limits(SPEED, acceleration=120)
 
 # Set up the Touch Sensor. It acts as an end-switch in the base
 # of the robot arm. It defines the starting point of the base.
@@ -165,11 +168,11 @@ def robot_pick(position):
 
     base_motor.run_target(SPEED, position[0])
     # Lower the arm.
-    elbow_motor.run_target(60, position[1])
+    elbow_motor.run_target(SPEED, position[1])
     # Close the gripper to grab the package.
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=75)
     # Raise the arm to lift the package.
-    elbow_motor.run_target(60, 5)
+    elbow_motor.run_target(SPEED, 5)
 
 def robot_release(position):
     # This function lowers the elbow, opens the gripper to
@@ -177,11 +180,11 @@ def robot_release(position):
 
     base_motor.run_target(SPEED, position[0])
     # Lower the arm to put the package on the ground.
-    elbow_motor.run_target(60, position[1])
+    elbow_motor.run_target(SPEED, position[1])
     # Open the gripper to release the package.
     gripper_motor.run_target(200, -90)
     # Raise the arm.
-    elbow_motor.run_target(60, 20)
+    elbow_motor.run_target(SPEED, 20)
 
 def color_distance(color1rgb, color2rgb):
     color1rgbp = []
@@ -221,8 +224,9 @@ def closest_color(color):
     return closest_color_name
 
 def color_sense():
-    # ev3.light.on(Color.upper(color))
-    return closest_color(color_sensor.rgb())
+    color = closest_color(color_sensor.rgb())
+    
+    return color
 
 def set_location():
     global POSITIONS
@@ -291,6 +295,8 @@ def check_location(position):
 
 def sorting():
     global run
+    ev3.screen.clear()
+    ev3.screen.print("\nCenter to emergency stop\nRight to pause")
     threading.Thread(target=emergency).start()
     threading.Thread(target=pause).start()
     if run == False:
@@ -311,7 +317,7 @@ def set_timer():
     global run
     global timer
     ev3.screen.clear()
-    ev3.screen.print("\n\nPlease see menu\n on computer")
+    ev3.screen.print("\nPlease see menu\n on computer")
     print("\n------ Set timer ------")
     print("1. Set time to run")
     print("2. Set schedule to run")
@@ -392,6 +398,8 @@ def emergency():
     global program_running
     while True:
         if Button.CENTER in ev3.buttons.pressed():
+            run = False
+            program_running = False
             base_motor.hold()
             elbow_motor.hold()
             gripper_motor.hold()
@@ -399,18 +407,22 @@ def emergency():
             ev3.screen.clear()
             ev3.screen.print("Emergency stop")
             selection = int(input("1. Reset\n2. Stop program\n"))
-            run = False
             if selection == 1:
-                run = False
-                program_running = False
+                run = True
+                program_running = True
                 break
-            elif selection == 2:
+            if selection == 2:
                 sys.exit()
+            else:
+                print("Invalid choice. Please try again.")
 
 def pause():
     global run
+    global not_paused
     while True:
         if Button.RIGHT in ev3.buttons.pressed():
+            run = False
+            not_paused = False
             base_motor.hold()
             elbow_motor.hold()
             gripper_motor.hold()
@@ -418,23 +430,37 @@ def pause():
             ev3.screen.clear()
             ev3.screen.print("Paused")
             selection = int(input("1. Continue\n2. Stop program\n"))
-            run = False
             if selection == 1:
                 run = True
+                not_paused = True
+                # program_running = True
                 break
-            elif selection == 2:
+            if selection == 2:
                 sys.exit()
+            else:
+                print("Invalid choice. Please try again.")
 
 def main():
     global program_running
     global run
+    global not_paused
+    # run = True
+    not_paused = True
+    program_running = True
     while True:
-        program_running = True
+        # program_running = True
         run = True
+        print("MAIN RUNNING")
         while program_running:
+            print("PROGRAM RUNNING")
             initialize_movement()
             menu()
-            sorting()
+            while not_paused:
+                if not_paused and run:
+                    print("SORTING RUNNING")
+                    sorting()
+                else:
+                    wait(1)
             if not program_running:
                 break
 
